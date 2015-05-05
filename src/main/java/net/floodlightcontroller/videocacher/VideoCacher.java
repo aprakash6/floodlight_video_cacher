@@ -49,7 +49,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 		}
 	}
 	
-	protected Map<TableEntry, byte[]> macTable;
+	protected Map<String, byte[]> macTable;
 	
 	protected IFloodlightProviderService floodlightProvider;
 	protected static Logger logger;
@@ -112,7 +112,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 			throws FloodlightModuleException {
 		floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
 	    logger = LoggerFactory.getLogger(VideoCacher.class);
-	    macTable = new HashMap <TableEntry, byte[]>();
+	    macTable = new HashMap <String, byte[]>();
 
 		
 	}
@@ -214,9 +214,11 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
         ipPortEntry.ip = srcIp;
         ipPortEntry.port = srcPort;
         
+        String entryVal = ipPortEntry.ip + ipPortEntry.port;
+        
         if(!macTable.containsKey(ipPortEntry))
         {
-        	macTable.put(ipPortEntry, match.getDataLayerSource());
+        	macTable.put(entryVal, match.getDataLayerSource());
         }
        
         
@@ -356,10 +358,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 		ipPortEntry.ip = destIp;
 		ipPortEntry.port = destPort;
 		
-		if (!macTable.containsKey(ipPortEntry))
+		String toRetrieveMac = ipPortEntry.ip + ipPortEntry.port;
+		
+		logger.warn("ip = " + ipPortEntry.ip + ", port = " + ipPortEntry.port );
+		if (!macTable.containsKey(toRetrieveMac))
 			logger.warn("<<<<<<<<<Something is wrong>>>>>>>>>");
 		
-		retrievedMac = macTable.get(ipPortEntry);
+		retrievedMac = macTable.get(toRetrieveMac);
 		
 		//add flow rule in child switch to duplicate flows
 			
