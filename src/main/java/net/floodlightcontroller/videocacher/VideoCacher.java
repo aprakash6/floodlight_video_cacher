@@ -124,6 +124,44 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 		
 	}
 	
+	/*
+	 * push a packet-out to the switch
+	 * */
+	private void pushPacket(IOFSwitch sw, OFMatch match, OFPacketIn pi, short outport) {
+		
+		// create an OFPacketOut for the pushed packet
+        OFPacketOut po = (OFPacketOut) floodlightProvider.getOFMessageFactory()
+                		.getMessage(OFType.PACKET_OUT);        
+        
+        // update the inputPort and bufferID
+        po.setInPort(pi.getInPort());
+        po.setBufferId(pi.getBufferId());
+                
+        // define the actions to apply for this packet
+        OFActionOutput action = new OFActionOutput();
+		action.setPort(outport);		
+		po.setActions(Collections.singletonList((OFAction)action));
+		po.setActionsLength((short)OFActionOutput.MINIMUM_LENGTH);
+	        
+        // set data if it is included in the packet in but buffer id is NONE
+        if (pi.getBufferId() == OFPacketOut.BUFFER_ID_NONE) {
+            byte[] packetData = pi.getPacketData();
+            po.setLength(U16.t(OFPacketOut.MINIMUM_LENGTH
+                    + po.getActionsLength() + packetData.length));
+            po.setPacketData(packetData);
+        } else {
+            po.setLength(U16.t(OFPacketOut.MINIMUM_LENGTH
+                    + po.getActionsLength()));
+        }        
+        
+        // push the packet to the switch
+        try {
+            sw.write(po, null);
+        } catch (IOException e) {
+            logger.error("failed to write packetOut: ", e);
+        }
+	}
+	
 	@Override
 	public net.floodlightcontroller.core.IListener.Command receive(
 			IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
@@ -282,6 +320,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
  			} catch (Exception e) {
  				e.printStackTrace();
  			}	
+ 			
+ 			this.pushPacket(sw, match2, pi, outPort);
+ 			
 		//}
 		
 	
@@ -314,6 +355,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 		
 		ipPortEntry.ip = destIp;
 		ipPortEntry.port = destPort;
+		
+		if (!macTable.containsKey(ipPortEntry))
+			logger.warn("<<<<<<<<<Something is wrong>>>>>>>>>");
 		
 		retrievedMac = macTable.get(ipPortEntry);
 		
