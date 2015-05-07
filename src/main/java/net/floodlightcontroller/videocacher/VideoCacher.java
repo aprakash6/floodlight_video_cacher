@@ -500,6 +500,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleArp.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
 		ruleArp.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
 		matchArp.setDataLayerType(Ethernet.TYPE_ARP);
+		//set everything to wildcards except nw_proto
 		matchArp.setWildcards(~OFMatch.OFPFW_DL_TYPE);
 		ruleArp.setMatch(matchArp);
 		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
@@ -526,8 +527,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleIcmp.setBufferId(OFPacketOut.BUFFER_ID_NONE);
 		ruleIcmp.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
 		ruleIcmp.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		matchIcmp.setDataLayerType(Ethernet.TYPE_IPv4);
 		matchIcmp.setNetworkProtocol(IPv4.PROTOCOL_ICMP);
-		matchIcmp.setWildcards(~OFMatch.OFPFW_NW_PROTO);
+		//set everything to wildcards except nw_proto and dl_type
+		matchIcmp.setWildcards(~OFMatch.OFPFW_NW_PROTO & ~OFMatch.OFPFW_DL_TYPE);
 		ruleIcmp.setMatch(matchIcmp);
 		ArrayList<OFAction> icmpActions = new ArrayList<OFAction>();
 		OFAction outIcmp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
