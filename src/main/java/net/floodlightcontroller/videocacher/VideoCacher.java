@@ -484,6 +484,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener  {
 	//This method is called when a new switch is connected
 	public void addedSwitch(IOFSwitch sw)
 	{
+		logger.warn("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
+		
 		OFMatch matchArp = new OFMatch();
 		OFFlowMod ruleArp = new OFFlowMod();
 		ruleArp.setType(OFType.FLOW_MOD);
