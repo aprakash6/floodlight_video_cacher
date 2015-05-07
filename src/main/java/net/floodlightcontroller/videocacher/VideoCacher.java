@@ -486,9 +486,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  		return Command.CONTINUE;
 	}
 
-//	//This method is called when a new switch is connected
-//	public void addedSwitch(IOFSwitch sw)
-//	{
+	//This method is called when a new switch is connected
+	public void addedSwitch(IOFSwitch sw)
+	{
 //		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
 //		
 //		OFMatch matchArp = new OFMatch();
@@ -508,13 +508,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 //		//OFMatch matchIcmp = new OFMatch();
 //		//OFFlowMod ruleIcmp = new OFFlowMod();
 //		//ruleIcmp.setType(OFType.FLOW_MOD);
-//		
-//		
-//	}
-
-	@Override
-	public void switchAdded(long switchId) 
-	{
+		
 		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
 		
 		OFMatch matchArp = new OFMatch();
@@ -534,17 +528,55 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		//staticFlowEntryPusher.addFlow("arp", ruleArp, Long.toString(switchId));
 		
 		try {
-			floodlightProvider.getSwitch(switchId).write(ruleArp, null);
+			sw.write(ruleArp, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		logger.debug("ARP Flow added to switch {}",Long.toString(switchId));
+		logger.debug("ARP Flow added to switch {}",sw.getStringId());
 		
 		
-		//OFMatch matchIcmp = new OFMatch();
-		//OFFlowMod ruleIcmp = new OFFlowMod();
-		//ruleIcmp.setType(OFType.FLOW_MOD);
+//		//OFMatch matchIcmp = new OFMatch();
+//		//OFFlowMod ruleIcmp = new OFFlowMod();
+//		//ruleIcmp.setType(OFType.FLOW_MOD);
+		
+		
+	}
+	
+
+	@Override
+	public void switchAdded(long switchId) 
+	{
+//		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
+//		
+//		OFMatch matchArp = new OFMatch();
+//		OFFlowMod ruleArp = new OFFlowMod();
+//		ruleArp.setType(OFType.FLOW_MOD);
+//		ruleArp.setCommand(OFFlowMod.OFPFC_ADD);
+//		ruleArp.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+//		ruleArp.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+//		ruleArp.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+//		matchArp.setDataLayerType(Ethernet.TYPE_ARP);
+//		//matchArp.setWildcards(Wildcards.FULL.matchOn(Flag.DL_TYPE).withNwDstMask(32));
+//		ruleArp.setMatch(matchArp);
+//		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
+//		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
+//		arpActions.add(outArp);
+//		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH + outArp.getLengthU() + OFAction.MINIMUM_LENGTH	);
+//		//staticFlowEntryPusher.addFlow("arp", ruleArp, Long.toString(switchId));
+//		
+//		try {
+//			floodlightProvider.getSwitch(switchId).write(ruleArp, null);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		logger.debug("ARP Flow added to switch {}",Long.toString(switchId));
+//		
+//		
+//		//OFMatch matchIcmp = new OFMatch();
+//		//OFFlowMod ruleIcmp = new OFFlowMod();
+//		//ruleIcmp.setType(OFType.FLOW_MOD);
 		
 	}
 
