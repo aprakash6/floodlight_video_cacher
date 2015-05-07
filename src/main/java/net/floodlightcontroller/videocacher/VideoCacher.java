@@ -507,8 +507,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		//logger.debug("flood port is  {}",OFPort.OFPP_FLOOD.getValue());
 		arpActions.add(outArp);
 		ruleArp.setActions(arpActions);
-		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH 
-							//+ outArp.getLengthU() 
+		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH
 							+ OFActionOutput.MINIMUM_LENGTH );
 		//staticFlowEntryPusher.addFlow("arp", ruleArp, floodlightProvider.getSwitch(switchId).getStringId() );
 		
@@ -519,12 +518,33 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			e.printStackTrace();
 		}
 		
-		logger.debug("ARP Flow added to switch {}",floodlightProvider.getSwitch(switchId).getStringId());
+		
+		OFMatch matchIcmp = new OFMatch();
+		OFFlowMod ruleIcmp = new OFFlowMod();
+		ruleIcmp.setType(OFType.FLOW_MOD);
+		ruleIcmp.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleIcmp.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleIcmp.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleIcmp.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		matchIcmp.setNetworkProtocol(IPv4.PROTOCOL_ICMP);
+		matchIcmp.setWildcards(~OFMatch.OFPFW_NW_PROTO);
+		ruleIcmp.setMatch(matchIcmp);
+		ArrayList<OFAction> icmpActions = new ArrayList<OFAction>();
+		OFAction outIcmp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
+		//logger.debug("flood port is  {}",OFPort.OFPP_FLOOD.getValue());
+		icmpActions.add(outIcmp);
+		ruleIcmp.setActions(icmpActions);
+		ruleIcmp.setLengthU(OFFlowMod.MINIMUM_LENGTH
+							+ OFActionOutput.MINIMUM_LENGTH );
+		//staticFlowEntryPusher.addFlow("arp", ruleArp, floodlightProvider.getSwitch(switchId).getStringId() );
 		
 		
-		//OFMatch matchIcmp = new OFMatch();
-		//OFFlowMod ruleIcmp = new OFFlowMod();
-		//ruleIcmp.setType(OFType.FLOW_MOD);
+		try {
+			floodlightProvider.getSwitch(switchId).write(ruleIcmp, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		
 	}
 
