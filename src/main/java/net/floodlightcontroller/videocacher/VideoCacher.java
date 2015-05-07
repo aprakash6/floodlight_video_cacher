@@ -35,7 +35,7 @@ import net.floodlightcontroller.packet.IPv4;
 import net.floodlightcontroller.staticflowentry.IStaticFlowEntryPusherService;
 
 
-public class VideoCacher implements IFloodlightModule, IOFMessageListener  {
+public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSwitchListener  {
 
 	
 	class TableEntry
@@ -128,7 +128,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener  {
 	public void startUp(FloodlightModuleContext context)
 			throws FloodlightModuleException {
 		floodlightProvider.addOFMessageListener(OFType.PACKET_IN, this);
-		//floodlightProvider.addOFSwitchListener(this); 
+		floodlightProvider.addOFSwitchListener(this); 
 		
 	}
 	
@@ -481,10 +481,36 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener  {
  		return Command.CONTINUE;
 	}
 
-	//This method is called when a new switch is connected
-	public void addedSwitch(IOFSwitch sw)
+//	//This method is called when a new switch is connected
+//	public void addedSwitch(IOFSwitch sw)
+//	{
+//		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
+//		
+//		OFMatch matchArp = new OFMatch();
+//		OFFlowMod ruleArp = new OFFlowMod();
+//		ruleArp.setType(OFType.FLOW_MOD);
+//		ruleArp.setCommand(OFFlowMod.OFPFC_ADD);
+//		matchArp.setDataLayerType(Ethernet.TYPE_ARP);
+//		ruleArp.setMatch(matchArp);
+//		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
+//		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
+//		arpActions.add(outArp);
+//		staticFlowEntryPusher.addFlow("arp", ruleArp, sw.getStringId());
+//		
+//		logger.debug("ARP Flow added to switch {}",sw.getStringId());
+//		
+//		
+//		//OFMatch matchIcmp = new OFMatch();
+//		//OFFlowMod ruleIcmp = new OFFlowMod();
+//		//ruleIcmp.setType(OFType.FLOW_MOD);
+//		
+//		
+//	}
+
+	@Override
+	public void switchAdded(long switchId) 
 	{
-		logger.warn("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
+		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
 		
 		OFMatch matchArp = new OFMatch();
 		OFFlowMod ruleArp = new OFFlowMod();
@@ -497,13 +523,37 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener  {
 		arpActions.add(outArp);
 		staticFlowEntryPusher.addFlow("arp", ruleArp, sw.getStringId());
 		
-		logger.warn("ARP Flow added to switch {}",sw.getStringId());
+		logger.debug("ARP Flow added to switch {}",sw.getStringId());
 		
 		
 		//OFMatch matchIcmp = new OFMatch();
 		//OFFlowMod ruleIcmp = new OFFlowMod();
 		//ruleIcmp.setType(OFType.FLOW_MOD);
 		
+	}
+
+	@Override
+	public void switchRemoved(long switchId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchActivated(long switchId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchPortChanged(long switchId, ImmutablePort port,
+			PortChangeType type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void switchChanged(long switchId) {
+		// TODO Auto-generated method stub
 		
 	}
 	
