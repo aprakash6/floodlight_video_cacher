@@ -490,8 +490,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	@Override
 	public void switchAdded(long switchId) 
 	{
-		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
-		
 		OFMatch matchArp = new OFMatch();
 		OFFlowMod ruleArp = new OFFlowMod();
 		ruleArp.setType(OFType.FLOW_MOD);
@@ -505,7 +503,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleArp.setMatch(matchArp);
 		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
 		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
-		//logger.debug("flood port is  {}",OFPort.OFPP_FLOOD.getValue());
 		arpActions.add(outArp);
 		ruleArp.setActions(arpActions);
 		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH
@@ -534,13 +531,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleIcmp.setMatch(matchIcmp);
 		ArrayList<OFAction> icmpActions = new ArrayList<OFAction>();
 		OFAction outIcmp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
-		//logger.debug("flood port is  {}",OFPort.OFPP_FLOOD.getValue());
 		icmpActions.add(outIcmp);
 		ruleIcmp.setActions(icmpActions);
 		ruleIcmp.setLengthU(OFFlowMod.MINIMUM_LENGTH
 							+ OFActionOutput.MINIMUM_LENGTH );
-		//staticFlowEntryPusher.addFlow("arp", ruleArp, floodlightProvider.getSwitch(switchId).getStringId() );
-		
 		
 		try {
 			floodlightProvider.getSwitch(switchId).write(ruleIcmp, null);
