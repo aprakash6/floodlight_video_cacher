@@ -97,6 +97,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	        new ArrayList<Class<? extends IFloodlightService>>();
 	    l.add(IFloodlightProviderService.class);
 	    l.add(IStaticFlowEntryPusherService.class);
+	    
 	    return l;
 	}
 	
@@ -512,8 +513,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	@Override
 	public void switchAdded(long switchId) 
 	{
-		if (Long.toString(switchId) == "11:00:00:00:00:00:00:00")
-		{
 		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
 		
 		OFMatch matchArp = new OFMatch();
@@ -525,11 +524,17 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
 		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
 		arpActions.add(outArp);
-		staticFlowEntryPusher.addFlow("arp", ruleArp, Long.toString(switchId));
+		//staticFlowEntryPusher.addFlow("arp", ruleArp, Long.toString(switchId));
+		
+		try {
+			floodlightProvider.getSwitch(switchId).write(ruleArp, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		logger.debug("ARP Flow added to switch {}",Long.toString(switchId));
 		
-		}
+		
 		//OFMatch matchIcmp = new OFMatch();
 		//OFFlowMod ruleIcmp = new OFFlowMod();
 		//ruleIcmp.setType(OFType.FLOW_MOD);
