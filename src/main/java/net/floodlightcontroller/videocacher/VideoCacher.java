@@ -512,6 +512,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	@Override
 	public void switchAdded(long switchId) 
 	{
+		if (Long.toString(switchId) == "1100000000000000")
+		{
 		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
 		
 		OFMatch matchArp = new OFMatch();
@@ -527,7 +529,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		logger.debug("ARP Flow added to switch {}",Long.toString(switchId));
 		
-		
+		}
 		//OFMatch matchIcmp = new OFMatch();
 		//OFFlowMod ruleIcmp = new OFFlowMod();
 		//ruleIcmp.setType(OFType.FLOW_MOD);
