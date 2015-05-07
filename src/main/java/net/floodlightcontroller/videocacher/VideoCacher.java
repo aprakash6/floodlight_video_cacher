@@ -575,6 +575,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	
 	private void addInitialFlows()
 	{
+		logger.debug("<<<<<<<<<<<<<<<Entering addInitialFlows()!>>>>>>>>>>>>");
+		
+		
 		OFMatch matchReqLowerSw = new OFMatch();
 		OFFlowMod ruleReqLowerSw = new OFFlowMod();
 		ruleReqLowerSw.setType(OFType.FLOW_MOD);
