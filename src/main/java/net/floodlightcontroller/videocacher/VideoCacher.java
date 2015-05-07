@@ -79,24 +79,24 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	protected Integer totalSwitchesConnected = 0;
 	
 	
-//	protected long ovsMain = 1100000000000000;
-//	
-//	protected long ovs11a = "00:00:00:00:00:00:11:01";
-//	protected long ovs11b = "00:00:00:00:00:00:11:02";
-//	
-//	protected long ovs21a = "00:00:00:00:00:00:21:01";
-//	protected long ovs21b = "00:00:00:00:00:00:21:02";
-//	protected long ovs22a = "00:00:00:00:00:00:22:01";
-//	protected long ovs22b = "00:00:00:00:00:00:22:02";
-//	
-//	protected long ovs31a = "00:00:00:00:00:00:31:01";
-//	protected long ovs31b = "00:00:00:00:00:00:31:02";
-//	protected long ovs32a = "00:00:00:00:00:00:32:01";
-//	protected long ovs32b = "00:00:00:00:00:00:32:02";
-//	protected long ovs33a = "00:00:00:00:00:00:33:01";
-//	protected long ovs33b = "00:00:00:00:00:00:33:02";
-//	protected long ovs34a = "00:00:00:00:00:00:34:01";
-//	protected long ovs34b = "00:00:00:00:00:00:34:02";
+	protected long ovsMain = 39321; //00:00:00:00:00:00:99:99 (hex to decimal)
+	
+	protected long ovs11a = 4353; //00:00:00:00:00:00:11:01
+	protected long ovs11b = 4354; //00:00:00:00:00:00:11:02
+	
+	protected long ovs21a = 8449; //00:00:00:00:00:00:21:01
+	protected long ovs21b = 8450; //00:00:00:00:00:00:21:02
+	protected long ovs22a = 8705; //00:00:00:00:00:00:22:01
+	protected long ovs22b = 8706; //00:00:00:00:00:00:22:02
+	
+	protected long ovs31a = 12545; //00:00:00:00:00:00:31:01
+	protected long ovs31b = 12546; //00:00:00:00:00:00:31:02
+	protected long ovs32a = 12801; //00:00:00:00:00:00:32:01
+	protected long ovs32b = 12802; //00:00:00:00:00:00:32:02
+	protected long ovs33a = 13057; //00:00:00:00:00:00:33:01
+	protected long ovs33b = 13058; //00:00:00:00:00:00:33:02
+	protected long ovs34a = 13313; //00:00:00:00:00:00:34:01
+	protected long ovs34b = 13314; //00:00:00:00:00:00:34:02
 	
 	@Override
 	public String getName() {
@@ -568,39 +568,78 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		totalSwitchesConnected++;
 		
-		//if ( totalSwitchesConnected == 15)
-			//this.addInitialFlows();
+		if ( totalSwitchesConnected == 15)
+			this.addInitialFlows();
 		
 	}
 	
-//	private void addInitialFlows()
-//	{
-//		OFMatch matchReqLowerSw = new OFMatch();
-//		OFFlowMod ruleReqLowerSw = new OFFlowMod();
-//		ruleReqLowerSw.setType(OFType.FLOW_MOD);
-//		ruleReqLowerSw.setCommand(OFFlowMod.OFPFC_ADD);
-//		ruleReqLowerSw.setBufferId(OFPacketOut.BUFFER_ID_NONE);
-//		ruleReqLowerSw.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
-//		ruleReqLowerSw.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
-//		matchReqLowerSw.setDataLayerType(Ethernet.TYPE_IPv4);
-//		matchReqLowerSw.setNetworkProtocol(IPv4.PROTOCOL_UDP);
-//		matchReqLowerSw.setInputPort((short)1);
-//		//set everything to wildcards except nw_proto and dl_type
-//		matchReqLowerSw.setWildcards(~OFMatch.OFPFW_NW_PROTO & ~OFMatch.OFPFW_DL_TYPE);
-//		ruleReqLowerSw.setMatch(matchReqLowerSw);
-//		ArrayList<OFAction> reqLowerSwActions = new ArrayList<OFAction>();
-//		OFAction outReqLowerSw = new OFActionOutput((short)2);
-//		reqLowerSwActions.add(outReqLowerSw);
-//		ruleReqLowerSw.setActions(reqLowerSwActions);
-//		ruleReqLowerSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
-//							+ OFActionOutput.MINIMUM_LENGTH );
-//		
-//		try {
-//			floodlightProvider..write(ruleReqLowerSw, null);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	private void addInitialFlows()
+	{
+		OFMatch matchReqLowerSw = new OFMatch();
+		OFFlowMod ruleReqLowerSw = new OFFlowMod();
+		ruleReqLowerSw.setType(OFType.FLOW_MOD);
+		ruleReqLowerSw.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleReqLowerSw.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleReqLowerSw.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleReqLowerSw.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		matchReqLowerSw.setDataLayerType(Ethernet.TYPE_IPv4);
+		matchReqLowerSw.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		matchReqLowerSw.setInputPort((short)1);
+		//set everything to wildcards except nw_proto and dl_type
+		matchReqLowerSw.setWildcards(~OFMatch.OFPFW_NW_PROTO & ~OFMatch.OFPFW_DL_TYPE);
+		ruleReqLowerSw.setMatch(matchReqLowerSw);
+		ArrayList<OFAction> reqLowerSwActions = new ArrayList<OFAction>();
+		OFAction outReqLowerSw = new OFActionOutput((short)2);
+		reqLowerSwActions.add(outReqLowerSw);
+		ruleReqLowerSw.setActions(reqLowerSwActions);
+		ruleReqLowerSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
+							+ OFActionOutput.MINIMUM_LENGTH );
+		
+		try {
+			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs32b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs33b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs34b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs21b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs22b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs11b).write(ruleReqLowerSw, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		OFMatch matchReqHigherSw = new OFMatch();
+		OFFlowMod ruleReqHigherSw = new OFFlowMod();
+		ruleReqHigherSw.setType(OFType.FLOW_MOD);
+		ruleReqHigherSw.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleReqHigherSw.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleReqHigherSw.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleReqHigherSw.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		matchReqHigherSw.setDataLayerType(Ethernet.TYPE_IPv4);
+		matchReqHigherSw.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		matchReqHigherSw.setInputPort((short)2);
+		//set everything to wildcards except nw_proto and dl_type
+		matchReqHigherSw.setWildcards(~OFMatch.OFPFW_NW_PROTO & ~OFMatch.OFPFW_DL_TYPE);
+		ruleReqHigherSw.setMatch(matchReqHigherSw);
+		ArrayList<OFAction> reqHigherSwActions = new ArrayList<OFAction>();
+		OFAction outReqHigherSw = new OFActionOutput((short)1);
+		reqHigherSwActions.add(outReqHigherSw);
+		ruleReqHigherSw.setActions(reqHigherSwActions);
+		ruleReqHigherSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
+							+ OFActionOutput.MINIMUM_LENGTH );
+		
+		try {
+			floodlightProvider.getSwitch(ovs31a).write(ruleReqHigherSw, null);
+			floodlightProvider.getSwitch(ovs32a).write(ruleReqHigherSw, null);
+			floodlightProvider.getSwitch(ovs33a).write(ruleReqHigherSw, null);
+			floodlightProvider.getSwitch(ovs34a).write(ruleReqHigherSw, null);
+			floodlightProvider.getSwitch(ovs21a).write(ruleReqHigherSw, null);
+			floodlightProvider.getSwitch(ovs22a).write(ruleReqHigherSw, null);
+			floodlightProvider.getSwitch(ovs11a).write(ruleReqHigherSw, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void switchRemoved(long switchId) {
