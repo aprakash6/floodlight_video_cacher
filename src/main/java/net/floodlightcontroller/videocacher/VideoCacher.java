@@ -96,6 +96,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	    Collection<Class<? extends IFloodlightService>> l =
 	        new ArrayList<Class<? extends IFloodlightService>>();
 	    l.add(IFloodlightProviderService.class);
+	    l.add(IStaticFlowEntryPusherService.class);
 	    return l;
 	}
 	
@@ -117,6 +118,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	public void init(FloodlightModuleContext context)
 			throws FloodlightModuleException {
 		floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
+		staticFlowEntryPusher = context.getServiceImpl(IStaticFlowEntryPusherService.class);
 	    logger = LoggerFactory.getLogger(VideoCacher.class);
 	    macTable = new HashMap <String, byte[]>();
 	    ruleTable = new HashMap <Integer, OFFlowMod>();
