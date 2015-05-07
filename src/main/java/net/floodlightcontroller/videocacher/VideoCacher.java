@@ -76,6 +76,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	
 	protected IStaticFlowEntryPusherService staticFlowEntryPusher;
 	
+	protected Integer totalSwitchesConnected = 0;
+	
 	@Override
 	public String getName() {
 		return VideoCacher.class.getSimpleName();
@@ -542,6 +544,16 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			e.printStackTrace();
 		}
 		
+		logger.debug("switch id = {}",floodlightProvider.getSwitch(switchId).getStringId() );
+		totalSwitchesConnected++;
+		
+		if ( totalSwitchesConnected == 15)
+			this.addInitialFlows();
+		
+	}
+	
+	private void addInitialFlows()
+	{
 		
 	}
 
