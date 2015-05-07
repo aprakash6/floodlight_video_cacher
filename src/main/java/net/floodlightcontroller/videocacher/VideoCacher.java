@@ -600,23 +600,23 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		try {
 			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
-			floodlightProvider.getSwitch(ovs32b).write(ruleReqLowerSw, null);
-			floodlightProvider.getSwitch(ovs33b).write(ruleReqLowerSw, null);
-			floodlightProvider.getSwitch(ovs34b).write(ruleReqLowerSw, null);
-			floodlightProvider.getSwitch(ovs21b).write(ruleReqLowerSw, null);
-			floodlightProvider.getSwitch(ovs22b).write(ruleReqLowerSw, null);
-			floodlightProvider.getSwitch(ovs11b).write(ruleReqLowerSw, null);
+//			floodlightProvider.getSwitch(ovs32b).write(ruleReqLowerSw, null);
+//			floodlightProvider.getSwitch(ovs33b).write(ruleReqLowerSw, null);
+//			floodlightProvider.getSwitch(ovs34b).write(ruleReqLowerSw, null);
+//			floodlightProvider.getSwitch(ovs21b).write(ruleReqLowerSw, null);
+//			floodlightProvider.getSwitch(ovs22b).write(ruleReqLowerSw, null);
+//			floodlightProvider.getSwitch(ovs11b).write(ruleReqLowerSw, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		logger.debug("ovs31b = " + floodlightProvider.getSwitch(ovs31b).getStringId() 
-				+ "ovs32b = " + floodlightProvider.getSwitch(ovs32b).getStringId()
-				+ "ovs33b = " + floodlightProvider.getSwitch(ovs33b).getStringId()
-				+ "ovs34b = " + floodlightProvider.getSwitch(ovs34b).getStringId()
-				+ "ovs21b = " + floodlightProvider.getSwitch(ovs21b).getStringId()
-				+ "ovs22b = " + floodlightProvider.getSwitch(ovs22b).getStringId()
-				+ "ovs11b = " + floodlightProvider.getSwitch(ovs11b).getStringId() );
+//		logger.debug("ovs31b = " + floodlightProvider.getSwitch(ovs31b).getStringId() 
+//				+ "ovs32b = " + floodlightProvider.getSwitch(ovs32b).getStringId()
+//				+ "ovs33b = " + floodlightProvider.getSwitch(ovs33b).getStringId()
+//				+ "ovs34b = " + floodlightProvider.getSwitch(ovs34b).getStringId()
+//				+ "ovs21b = " + floodlightProvider.getSwitch(ovs21b).getStringId()
+//				+ "ovs22b = " + floodlightProvider.getSwitch(ovs22b).getStringId()
+//				+ "ovs11b = " + floodlightProvider.getSwitch(ovs11b).getStringId() );
 		
 		
 		OFMatch matchReqHigherSw = new OFMatch();
@@ -641,23 +641,24 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		try {
 			floodlightProvider.getSwitch(ovs31a).write(ruleReqHigherSw, null);
-			floodlightProvider.getSwitch(ovs32a).write(ruleReqHigherSw, null);
-			floodlightProvider.getSwitch(ovs33a).write(ruleReqHigherSw, null);
-			floodlightProvider.getSwitch(ovs34a).write(ruleReqHigherSw, null);
-			floodlightProvider.getSwitch(ovs21a).write(ruleReqHigherSw, null);
-			floodlightProvider.getSwitch(ovs22a).write(ruleReqHigherSw, null);
-			floodlightProvider.getSwitch(ovs11a).write(ruleReqHigherSw, null);
+//			floodlightProvider.getSwitch(ovs32a).write(ruleReqHigherSw, null);
+//			floodlightProvider.getSwitch(ovs33a).write(ruleReqHigherSw, null);
+//			floodlightProvider.getSwitch(ovs34a).write(ruleReqHigherSw, null);
+//			floodlightProvider.getSwitch(ovs21a).write(ruleReqHigherSw, null);
+//			floodlightProvider.getSwitch(ovs22a).write(ruleReqHigherSw, null);
+//			floodlightProvider.getSwitch(ovs11a).write(ruleReqHigherSw, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		logger.debug("ovs31a = " + floodlightProvider.getSwitch(ovs31a).getStringId() 
-				+ "ovs32a = " + floodlightProvider.getSwitch(ovs32a).getStringId()
-				+ "ovs33a = " + floodlightProvider.getSwitch(ovs33a).getStringId()
-				+ "ovs34a = " + floodlightProvider.getSwitch(ovs34a).getStringId()
-				+ "ovs21a = " + floodlightProvider.getSwitch(ovs21a).getStringId()
-				+ "ovs22a = " + floodlightProvider.getSwitch(ovs22a).getStringId()
-				+ "ovs11a = " + floodlightProvider.getSwitch(ovs11a).getStringId() );
+//		logger.debug("ovs31a = " + floodlightProvider.getSwitch(ovs31a).getStringId() 
+//				+ "ovs32a = " + floodlightProvider.getSwitch(ovs32a).getStringId()
+//				+ "ovs33a = " + floodlightProvider.getSwitch(ovs33a).getStringId()
+//				+ "ovs34a = " + floodlightProvider.getSwitch(ovs34a).getStringId()
+//				+ "ovs21a = " + floodlightProvider.getSwitch(ovs21a).getStringId()
+//				+ "ovs22a = " + floodlightProvider.getSwitch(ovs22a).getStringId()
+//				+ "ovs11a = " + floodlightProvider.getSwitch(ovs11a).getStringId() );
+		
 	}
 
 	@Override
