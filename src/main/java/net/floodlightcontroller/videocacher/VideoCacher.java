@@ -573,7 +573,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 	}
 	
-	private void addInitialFlows()
+	public void addInitialFlows()
 	{
 		logger.debug("<<<<<<<<<<<<<<<Entering addInitialFlows()!>>>>>>>>>>>>");
 		
@@ -587,9 +587,12 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleReqLowerSw.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
 		matchReqLowerSw.setDataLayerType(Ethernet.TYPE_IPv4);
 		matchReqLowerSw.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		matchReqLowerSw.setTransportDestination((short) 30000);
 		matchReqLowerSw.setInputPort((short)1);
 		//set everything to wildcards except nw_proto and dl_type
-		matchReqLowerSw.setWildcards(~OFMatch.OFPFW_NW_PROTO & ~OFMatch.OFPFW_DL_TYPE);
+		matchReqLowerSw.setWildcards(~OFMatch.OFPFW_NW_PROTO & 
+									 ~OFMatch.OFPFW_DL_TYPE & 
+									 ~OFMatch.OFPFW_TP_DST);
 		ruleReqLowerSw.setMatch(matchReqLowerSw);
 		ArrayList<OFAction> reqLowerSwActions = new ArrayList<OFAction>();
 		OFAction outReqLowerSw = new OFActionOutput((short)2);
@@ -598,17 +601,19 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleReqLowerSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
 							+ OFActionOutput.MINIMUM_LENGTH );
 		
-		try {
-			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
+		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs11b).getStringId() );
+		
+//		try {
+//			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
 //			floodlightProvider.getSwitch(ovs32b).write(ruleReqLowerSw, null);
 //			floodlightProvider.getSwitch(ovs33b).write(ruleReqLowerSw, null);
 //			floodlightProvider.getSwitch(ovs34b).write(ruleReqLowerSw, null);
 //			floodlightProvider.getSwitch(ovs21b).write(ruleReqLowerSw, null);
 //			floodlightProvider.getSwitch(ovs22b).write(ruleReqLowerSw, null);
 //			floodlightProvider.getSwitch(ovs11b).write(ruleReqLowerSw, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
 //		logger.debug("ovs31b = " + floodlightProvider.getSwitch(ovs31b).getStringId() 
 //				+ "ovs32b = " + floodlightProvider.getSwitch(ovs32b).getStringId()
