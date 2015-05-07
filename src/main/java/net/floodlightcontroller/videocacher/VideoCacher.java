@@ -503,7 +503,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		//matchArp.setWildcards(Wildcards.FULL.matchOn(Flag.DL_TYPE).withNwDstMask(32));
 		ruleArp.setMatch(matchArp);
 		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
-		OFAction outArp = new OFActionOutput(OFPort.OFPP_ALL.getValue());
+		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
 		arpActions.add(outArp);
 		ruleArp.setActions(arpActions);
 		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH 
