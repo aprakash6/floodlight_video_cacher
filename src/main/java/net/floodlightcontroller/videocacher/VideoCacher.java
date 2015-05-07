@@ -500,7 +500,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleArp.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
 		ruleArp.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
 		matchArp.setDataLayerType(Ethernet.TYPE_ARP);
-		//matchArp.setWildcards(Wildcards.FULL.matchOn(Flag.DL_TYPE).withNwDstMask(32));
+		matchArp.setWildcards(~OFMatch.OFPFW_DL_TYPE);
 		ruleArp.setMatch(matchArp);
 		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
 		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
@@ -508,7 +508,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		arpActions.add(outArp);
 		ruleArp.setActions(arpActions);
 		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH 
-							+ outArp.getLengthU() 
+							//+ outArp.getLengthU() 
 							+ OFActionOutput.MINIMUM_LENGTH );
 		//staticFlowEntryPusher.addFlow("arp", ruleArp, floodlightProvider.getSwitch(switchId).getStringId() );
 		
