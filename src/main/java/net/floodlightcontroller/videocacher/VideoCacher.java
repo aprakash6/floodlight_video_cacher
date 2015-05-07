@@ -524,6 +524,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
 		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
 		arpActions.add(outArp);
+		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH + OFActionOutput.MINIMUM_LENGTH);
 		//staticFlowEntryPusher.addFlow("arp", ruleArp, Long.toString(switchId));
 		
 		try {
