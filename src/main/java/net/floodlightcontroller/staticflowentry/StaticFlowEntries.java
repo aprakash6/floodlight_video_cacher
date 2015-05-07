@@ -219,8 +219,7 @@ public class StaticFlowEntries {
             }
             switch(a.getType()) {
                 case OUTPUT:
-                    //sb.append("output=" + Short.toString(((OFActionOutput)a).getPort()));
-                	sb.append("output=" + Integer.toString(((OFActionOutput)a).getPort()));
+                    sb.append("output=" + Short.toString(((OFActionOutput)a).getPort()));
                     break;
                 case OPAQUE_ENQUEUE:
                     int queue = ((OFActionEnqueue)a).getQueueId();
