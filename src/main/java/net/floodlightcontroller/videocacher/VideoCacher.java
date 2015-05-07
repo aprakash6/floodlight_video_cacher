@@ -564,7 +564,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			e.printStackTrace();
 		}
 		
-		//logger.debug("switch id = {}",floodlightProvider.getSwitch(switchId).getStringId() );
+		logger.debug("switch id = {}",switchId );
 		
 		totalSwitchesConnected++;
 		
