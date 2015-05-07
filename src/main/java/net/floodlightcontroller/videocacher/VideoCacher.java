@@ -32,9 +32,10 @@ import net.floodlightcontroller.core.module.IFloodlightModule;
 import net.floodlightcontroller.core.module.IFloodlightService;
 import net.floodlightcontroller.packet.Ethernet;
 import net.floodlightcontroller.packet.IPv4;
+import net.floodlightcontroller.staticflowentry.IStaticFlowEntryPusherService;
 
 
-public class VideoCacher implements IFloodlightModule, IOFMessageListener {
+public class VideoCacher implements IFloodlightModule, IOFMessageListener  {
 
 	
 	class TableEntry
@@ -50,6 +51,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 	}
 	
 	protected Map<String, byte[]> macTable;
+	
+	protected Map<Integer, OFFlowMod> ruleTable;
+	protected Integer flowCount;
 	
 	protected IFloodlightProviderService floodlightProvider;
 	protected static Logger logger;
@@ -67,6 +71,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 	private final static String CHILD_UP_MAC = "";
 	private final static String CHILD_DOWN_IP = "10.10.2.1";
 	private final static String CHILD_DOWN_MAC = "";
+	
+	protected IStaticFlowEntryPusherService staticFlowEntryPusher;
 	
 	@Override
 	public String getName() {
@@ -113,7 +119,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 		floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
 	    logger = LoggerFactory.getLogger(VideoCacher.class);
 	    macTable = new HashMap <String, byte[]>();
-
+	    ruleTable = new HashMap <Integer, OFFlowMod>();
+	    flowCount = 0;
 		
 	}
 
@@ -121,6 +128,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 	public void startUp(FloodlightModuleContext context)
 			throws FloodlightModuleException {
 		floodlightProvider.addOFMessageListener(OFType.PACKET_IN, this);
+		//floodlightProvider.addOFSwitchListener(this); 
 		
 	}
 	
@@ -193,7 +201,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
 	
 	private Command newRequestFromClient(IOFSwitch sw, OFPacketIn pi) 
 	{
-		 
+		
+		flowCount++;
+		
 		// Read in packet data headers by using an OFMatch structure
         OFMatch match = new OFMatch();
         match.loadFromPacket(pi.getPacketData(), pi.getInPort());		
@@ -222,7 +232,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
         }
        
         
-		//if ( sw.getId() == Long.valueOf(childSw).longValue() ) {
+		
 			
 			 Short outPort = OFPort.OFPP_LOCAL.getValue();
 			 
@@ -316,7 +326,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
  			rule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 			
  			
  			//logger.debug("install rule for destination {}", destMac);
- 			 
+ 			
+ 			
+ 			
  			try {
  				sw.write(rule, null);
  			} catch (Exception e) {
@@ -325,7 +337,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
  			
  			this.pushPacket(sw, match2, pi, outPort);
  			
-		//}
+		
 		
 	
 		return Command.CONTINUE;
@@ -456,15 +468,43 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener {
  		
  		//logger.debug("install rule for destination {}", destMac);
  		 
+ 		ruleTable.put(flowCount, rule);
+ 		
  		try {
  			sw.write(rule, null);
  		} catch (Exception e) {
  			e.printStackTrace();
  		}	
 		
+ 		
 				
  		return Command.CONTINUE;
 	}
+
+	//This method is called when a new switch is connected
+	public void addedSwitch(IOFSwitch sw)
+	{
+		OFMatch matchArp = new OFMatch();
+		OFFlowMod ruleArp = new OFFlowMod();
+		ruleArp.setType(OFType.FLOW_MOD);
+		ruleArp.setCommand(OFFlowMod.OFPFC_ADD);
+		matchArp.setDataLayerType(Ethernet.TYPE_ARP);
+		ruleArp.setMatch(matchArp);
+		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
+		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
+		arpActions.add(outArp);
+		staticFlowEntryPusher.addFlow("arp", ruleArp, sw.getStringId());
+		
+		logger.warn("ARP Flow added to switch {}",sw.getStringId());
+		
+		
+		//OFMatch matchIcmp = new OFMatch();
+		//OFFlowMod ruleIcmp = new OFFlowMod();
+		//ruleIcmp.setType(OFType.FLOW_MOD);
+		
+		
+	}
+	
 	
 	
 
