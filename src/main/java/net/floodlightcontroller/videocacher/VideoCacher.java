@@ -512,7 +512,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	@Override
 	public void switchAdded(long switchId) 
 	{
-		if (Long.toString(switchId) == "1100000000000000")
+		if (Long.toString(switchId) == "11:00:00:00:00:00:00:00")
 		{
 		logger.debug("<<<<<<<<<<Entered addedSwitch callback method>>>>>>>>>>>>");
 		
