@@ -14,6 +14,8 @@ import org.openflow.protocol.OFPacketIn;
 import org.openflow.protocol.OFPacketOut;
 import org.openflow.protocol.OFPort;
 import org.openflow.protocol.OFType;
+import org.openflow.protocol.Wildcards;
+import org.openflow.protocol.Wildcards.Flag;
 import org.openflow.protocol.action.*;
 import org.openflow.util.U16;
 import org.slf4j.Logger;
@@ -519,12 +521,16 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		OFFlowMod ruleArp = new OFFlowMod();
 		ruleArp.setType(OFType.FLOW_MOD);
 		ruleArp.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleArp.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleArp.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleArp.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
 		matchArp.setDataLayerType(Ethernet.TYPE_ARP);
+		//matchArp.setWildcards(Wildcards.FULL.matchOn(Flag.DL_TYPE).withNwDstMask(32));
 		ruleArp.setMatch(matchArp);
 		ArrayList<OFAction> arpActions = new ArrayList<OFAction>();
 		OFAction outArp = new OFActionOutput(OFPort.OFPP_FLOOD.getValue());
 		arpActions.add(outArp);
-		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH + OFActionOutput.MINIMUM_LENGTH);
+		ruleArp.setLengthU(OFFlowMod.MINIMUM_LENGTH + outArp.getLengthU());
 		//staticFlowEntryPusher.addFlow("arp", ruleArp, Long.toString(switchId));
 		
 		try {
