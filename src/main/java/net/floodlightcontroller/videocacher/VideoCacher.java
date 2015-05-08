@@ -389,7 +389,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		listOfFlows = staticFlowEntryPusher.getFlows(swToAddDuplication);
 		
-		OFFlowMod curFlow = listOfFlows.get("MovieLower");
+		OFFlowMod curFlow = new OFFlowMod(); 
+		curFlow = listOfFlows.get("MovieLower");
 		
 		logger.debug("---------------------- " + curFlow + " ------------");
 		
