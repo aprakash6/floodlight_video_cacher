@@ -435,12 +435,12 @@ public class StaticFlowEntries {
         SubActionStruct sa = null;
         Matcher n;
         
+        log.error("---------------1st one--------------------------");
         n = Pattern.compile("output=(?:((?:0x)?\\d+)|(all)|(controller)|(local)|(ingress-port)|(normal)|(flood))").matcher(subaction);
         if (n.matches()) {
             OFActionOutput action = new OFActionOutput();
             action.setMaxLength((short) Short.MAX_VALUE);
-//            short port = OFPort.OFPP_NONE.getValue();
-            short port = OFPort.OFPP_LOCAL.getValue();
+            short port = OFPort.OFPP_NONE.getValue();
             if (n.group(1) != null) {
                 try {
                     port = get_short(n.group(1));
@@ -455,7 +455,10 @@ public class StaticFlowEntries {
             else if (n.group(3) != null)
                 port = OFPort.OFPP_CONTROLLER.getValue();
             else if (n.group(4) != null)
+            {
+            	log.error("---------------inside local--------------------------");
                 port = OFPort.OFPP_LOCAL.getValue();
+            }
             else if (n.group(5) != null)
                 port = OFPort.OFPP_IN_PORT.getValue();
             else if (n.group(6) != null)
