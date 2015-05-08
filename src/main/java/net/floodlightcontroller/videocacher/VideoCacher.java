@@ -216,9 +216,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			if ( match.getTransportDestination() == 30000 )
 				return this.newRequestFromClient(sw, (OFPacketIn)msg );
 			
-			if ( match.getNetworkSource() == IPv4.toIPv4Address(ROOT_IP) )
-				return this.addFlowToDuplicateStream( sw, (OFPacketIn)msg );
-			
+//			if ( match.getNetworkSource() == IPv4.toIPv4Address(ROOT_IP) )
+//				return this.addFlowToDuplicateStream( sw, (OFPacketIn)msg );
+//			
 		default:
 			break;
 		}
