@@ -510,7 +510,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			newActions.add(nwDst);
 			newActions.add(tpDst);
 			newActions.add(outNew);
-			newRule.setActions(newActions);
+			
 			actionsLength += ( OFActionOutput.MINIMUM_LENGTH + 
 					  //OFActionDataLayerSource.MINIMUM_LENGTH + 
 					  //OFActionDataLayerDestination.MINIMUM_LENGTH + 
@@ -520,6 +520,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					  OFActionTransportLayerDestination.MINIMUM_LENGTH);
 		}
 		
+		newRule.setActions(newActions);
 		newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 	
 		
 		
