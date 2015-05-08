@@ -384,10 +384,11 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	{
 		String swToAddDuplication = floodlightProvider.getSwitch(ovs21b).getStringId();
 		
-		Map<String, OFFlowMod> listOfFlows;
-		listOfFlows = new HashMap<String, OFFlowMod>();
+		Map<String, OFFlowMod> listOfFlows = new HashMap<String, OFFlowMod>(); 
 		
 		listOfFlows = staticFlowEntryPusher.getFlows(swToAddDuplication);
+		
+		logger.debug("---------------------- " + listOfFlows + " ------------");
 		
 		OFFlowMod curFlow = new OFFlowMod(); 
 		curFlow = listOfFlows.get("MovieLower");
