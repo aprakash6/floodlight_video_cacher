@@ -469,6 +469,7 @@ public class StaticFlowEntries {
             sa.len = OFActionOutput.MINIMUM_LENGTH;
         }
         else {
+        	//Modified by Aditya
         	short port = OFPort.OFPP_LOCAL.getValue();
         	OFActionOutput action = new OFActionOutput();
         	action.setPort(port);
