@@ -46,13 +46,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	{
 		public String ip;
 		public short port;
-		public String mac;
+		public byte[] mac;
 		
 		public TableEntry()
 		{
 			this.ip = "";
 			this.port = 0;
-			this.mac = "";
+			this.mac = "00:00:00:00:00:00".getBytes();
 		}
 	}
 	
@@ -251,7 +251,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
         TableEntry ipPortEntry = new TableEntry();
         ipPortEntry.ip = srcIp;
         ipPortEntry.port = srcPort;
-        ipPortEntry.mac = match.getDataLayerDestination().toString();
+        ipPortEntry.mac = Ethernet.toByteArray(sourceMac);
         
         String entryVal = ipPortEntry.ip + ipPortEntry.port;
         
@@ -435,7 +435,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
 		OFActionTransportLayerDestination tlDst = new OFActionTransportLayerDestination();
 		
-		dlDst.setDataLayerAddress(Ethernet.toMACAddress(ipPortMacEntry.mac));
+		dlDst.setDataLayerAddress(ipPortMacEntry.mac);
 		nwDst.setNetworkAddress(IPv4.toIPv4Address(ipPortMacEntry.ip));
 		tlDst.setTransportPort(ipPortMacEntry.port);
 		
