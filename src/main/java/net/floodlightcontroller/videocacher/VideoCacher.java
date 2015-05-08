@@ -595,7 +595,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 									 ~OFMatch.OFPFW_TP_DST);
 		ruleReqLowerSw.setMatch(matchReqLowerSw);
 		ArrayList<OFAction> reqLowerSwActions = new ArrayList<OFAction>();
-		OFAction outReqLowerSw = new OFActionOutput((short)2);
+		OFAction outReqLowerSw = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
 		reqLowerSwActions.add(outReqLowerSw);
 		ruleReqLowerSw.setActions(reqLowerSwActions);
 		ruleReqLowerSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
@@ -631,7 +631,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleReqHigherSw.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
 		matchReqHigherSw.setDataLayerType(Ethernet.TYPE_IPv4);
 		matchReqHigherSw.setNetworkProtocol(IPv4.PROTOCOL_UDP);
-		matchReqHigherSw.setInputPort((short)2);
+		matchReqHigherSw.setInputPort(OFPort.OFPP_LOCAL.getValue());
 		//set everything to wildcards except nw_proto and dl_type
 		matchReqHigherSw.setWildcards(~OFMatch.OFPFW_NW_PROTO & ~OFMatch.OFPFW_DL_TYPE);
 		ruleReqHigherSw.setMatch(matchReqHigherSw);
