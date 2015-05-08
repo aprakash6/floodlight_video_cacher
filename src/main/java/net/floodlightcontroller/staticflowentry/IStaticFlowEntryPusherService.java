@@ -38,7 +38,7 @@ public interface IStaticFlowEntryPusherService extends IFloodlightService {
     public void deleteFlow(String name);
     
     /**
-     * Deletes all static flows for a practicular switch
+     * Deletes all static flows for a particular switch
      * @param dpid The DPID of the switch to delete flows for.
      */
     public void deleteFlowsForSwitch(long dpid);

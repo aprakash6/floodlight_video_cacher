@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.openflow.protocol.OFFlowMod;
@@ -28,6 +29,7 @@ import net.floodlightcontroller.core.IOFSwitch;
 import net.floodlightcontroller.core.IOFSwitch.PortChangeType;
 import net.floodlightcontroller.core.IOFSwitchListener;
 import net.floodlightcontroller.core.ImmutablePort;
+import net.floodlightcontroller.core.internal.FloodlightProvider;
 import net.floodlightcontroller.core.module.FloodlightModuleContext;
 import net.floodlightcontroller.core.module.FloodlightModuleException;
 import net.floodlightcontroller.core.module.IFloodlightModule;
@@ -215,10 +217,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			
 			if ( match.getTransportDestination() == 30000 )
 				return this.newRequestFromClient(sw, (OFPacketIn)msg );
-			
-//			if ( match.getNetworkSource() == IPv4.toIPv4Address(ROOT_IP) )
-//				return this.addFlowToDuplicateStream( sw, (OFPacketIn)msg );
-//			
+					
 		default:
 			break;
 		}
@@ -355,6 +354,11 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			//logger.debug("install rule for destination {}", destMac);
  			
  			
+ 			/*----------Add a duplication rule at a particular switch before allowing the movie request
+ 			 to go through---------------------------------------------------------------------------*/
+ 			
+ 			this.addFlowToDuplicateStream();
+ 			
  			
  			try {
  				sw.write(rule, null);
@@ -371,141 +375,39 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	}
 	
 	
-	private Command addFlowToDuplicateStream(IOFSwitch sw, OFPacketIn pi)
+	private void addFlowToDuplicateStream()
 	{
-		// Read in packet data headers by using an OFMatch structure
-        OFMatch match = new OFMatch();
-        match.loadFromPacket(pi.getPacketData(), pi.getInPort());		
-        
-		// take the source and destination mac from the packet
-		Long sourceMac = Ethernet.toLong(match.getDataLayerSource());
-        Long destMac   = Ethernet.toLong(match.getDataLayerDestination());
-        
-        String srcIp = IPv4.fromIPv4Address(match.getNetworkSource());
-        String destIp = IPv4.fromIPv4Address(match.getNetworkDestination());
-        
-        short srcPort = match.getTransportSource();
-        short destPort = match.getTransportDestination();
-         
-        Short inPort = pi.getInPort();
-
-        Short outPort2 = 1;
-			 
-		TableEntry ipPortEntry = new TableEntry();
-		byte[] retrievedMac;
+		String swToAddDuplication = floodlightProvider.getSwitch(ovs21b).getStringId();
 		
-		ipPortEntry.ip = destIp;
-		ipPortEntry.port = destPort;
+		Map<String, OFFlowMod> listOfFlows;
+		listOfFlows = new HashMap<String, OFFlowMod>();
 		
-		String toRetrieveMac = ipPortEntry.ip + ipPortEntry.port;
+		listOfFlows = staticFlowEntryPusher.getFlows(swToAddDuplication);
 		
-		logger.warn("ip = " + ipPortEntry.ip + ", port = " + ipPortEntry.port );
-		if (!macTable.containsKey(toRetrieveMac))
-			logger.warn("<<<<<<<<<Something is wrong>>>>>>>>>");
+		OFFlowMod curFlow = listOfFlows.get("MovieLower");
 		
-		retrievedMac = macTable.get(toRetrieveMac);
+		ArrayList<OFAction> curActions = new ArrayList<OFAction>();
+		curActions = (ArrayList<OFAction>) curFlow.getActions();
+		Iterator itr = curActions.iterator();
+	      while(itr.hasNext()) {
+	         OFAction ele = (OFAction) itr.next();
+	         logger.debug("---------------------- " + ele + " ------------");
+	      }
 		
-		//add flow rule in child switch to duplicate flows
-			
-		// create the rule and specify it's an ADD rule
-        OFMatch match2 = new OFMatch();
-        OFFlowMod rule = new OFFlowMod();
- 		rule.setType(OFType.FLOW_MOD); 			
- 		rule.setCommand(OFFlowMod.OFPFC_ADD);
- 			
- 		int wildcards = ( (Integer) sw 
-					.getAttribute(IOFSwitch.PROP_FASTWILDCARDS))
-					.intValue()
-					& ~OFMatch.OFPFW_NW_PROTO
-					& ~OFMatch.OFPFW_IN_PORT
-					& ~OFMatch.OFPFW_DL_TYPE
-					& ~OFMatch.OFPFW_DL_VLAN
-					& ~OFMatch.OFPFW_DL_SRC
-					& ~OFMatch.OFPFW_DL_DST
-					& ~OFMatch.OFPFW_NW_SRC_MASK
-					& ~OFMatch.OFPFW_NW_DST_MASK;
- 			
- 		match2.setWildcards(wildcards); 
- 		
- 		match2.setNetworkProtocol(match.getNetworkProtocol());
- 		match2.setInputPort(inPort);
- 		match2.setDataLayerType(match.getDataLayerType());
- 		match2.setDataLayerVirtualLan(match.getDataLayerVirtualLan());
- 		match2.setDataLayerSource(match.getDataLayerSource());
- 		match2.setDataLayerDestination(match.getDataLayerDestination());
- 		match2.setNetworkSource(match.getNetworkSource());
- 		match2.setNetworkDestination(match.getNetworkDestination());
- 		match2.setNetworkTypeOfService(match.getNetworkTypeOfService());
- 		
- 		rule.setMatch(match2);
- 		
- 		// specify timers for the life of the rule
- 		rule.setIdleTimeout(VideoCacher.FLOWMOD_DEFAULT_IDLE_TIMEOUT);
- 		rule.setHardTimeout(VideoCacher.FLOWMOD_DEFAULT_HARD_TIMEOUT);
- 	       
- 	    // set the buffer id to NONE - implementation artifact
- 		rule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
- 	       
- 	    // set of actions to apply to this rule
- 		ArrayList<OFAction> actions = new ArrayList<OFAction>();
- 			
- 			
- 			
- 		//************SET OUTPUT PORT HERE*******************
- 		OFAction out1 = new OFActionOutput(outPort2);
- 			
- 		OFActionDataLayerSource dlSrc = new OFActionDataLayerSource();
- 		OFActionDataLayerDestination dlDst = new OFActionDataLayerDestination();
- 		OFActionNetworkLayerSource nwSrc = new OFActionNetworkLayerSource();
- 		OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
- 		OFActionTransportLayerSource tlSrc = new OFActionTransportLayerSource();
- 		OFActionTransportLayerDestination tlDst = new OFActionTransportLayerDestination();
- 		
- 		//dlSrc.setDataLayerAddress(Ethernet.toMACAddress(CHILD_UP_MAC));
- 		dlDst.setDataLayerAddress(retrievedMac);
- 		
- 		//nwSrc.setNetworkAddress(IPv4.toIPv4Address(CHILD_UP_IP));
- 		//nwDst.setNetworkAddress(IPv4.toIPv4Address(ROOT_IP));
- 		
- 		//actions.add(dlSrc);
- 		actions.add(dlDst);
- 		//actions.add(nwSrc);
- 		//actions.add(nwDst);
- 		//actions.add(tlSrc);
- 		//actions.add(tlDst);
- 		actions.add(out1);
- 		
- 		rule.setActions(actions);
- 		
- 		//logger.warn(actions.toString());
- 		
- 		//specify the length of the flow structure created
- 		//rule.setLength((short) (OFFlowMod.MINIMUM_LENGTH + OFActionOutput.MINIMUM_LENGTH)); 			
- 		
- 		int actionsLength = ( OFActionOutput.MINIMUM_LENGTH + 
- 							  //OFActionDataLayerSource.MINIMUM_LENGTH + 
- 							  OFActionDataLayerDestination.MINIMUM_LENGTH); 
- 							  //OFActionNetworkLayerSource.MINIMUM_LENGTH + 
- 							  //OFActionNetworkLayerDestination.MINIMUM_LENGTH); 
- 							  //OFActionTransportLayerSource.MINIMUM_LENGTH + 
- 							  //OFActionTransportLayerDestination.MINIMUM_LENGTH);
- 							  
- 							 
- 		rule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 			
- 		
- 		//logger.debug("install rule for destination {}", destMac);
- 		 
- 		ruleTable.put(flowCount, rule);
- 		
- 		try {
- 			sw.write(rule, null);
- 		} catch (Exception e) {
- 			e.printStackTrace();
- 		}	
-		
- 		
-				
- 		return Command.CONTINUE;
+//		OFMatch curMatch = new OFMatch();
+//		curMatch = curFlow.getMatch();
+//		
+//		OFMatch newMatch = new OFMatch();
+//		OFFlowMod newRule = new OFFlowMod();
+//		newRule.setType(OFType.FLOW_MOD);
+//		newRule.setCommand(OFFlowMod.OFPFC_ADD);
+//		newRule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+//		newRule.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+//		newRule.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+//		newRule.setMatch(curMatch);
+//		
+//		ArrayList<OFAction> newActions = new ArrayList<OFAction>();
+//		
 	}
 	
 
