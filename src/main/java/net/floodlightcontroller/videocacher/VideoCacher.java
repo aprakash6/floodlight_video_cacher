@@ -357,7 +357,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			/*----------Add a duplication rule at a particular switch before allowing the movie request
  			 to go through---------------------------------------------------------------------------*/
  			
- 			this.addFlowToDuplicateStream();
+ 			if (flowCount > 1)
+ 				this.addFlowToDuplicateStream();
  			
  			
  			try {
