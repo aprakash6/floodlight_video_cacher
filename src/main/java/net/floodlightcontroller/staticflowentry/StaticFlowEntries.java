@@ -784,8 +784,15 @@ public class StaticFlowEntries {
             }
         }
         else {
-            log.debug("Invalid action: '{}'", subaction);
-            return null;
+        	short portnum = get_short(n.group(1));
+            OFActionTransportLayerDestination action = new OFActionTransportLayerDestination();
+            action.setTransportPort(portnum);
+        	sa = new SubActionStruct();
+            sa.action = action;
+            sa.len = OFActionTransportLayerDestination.MINIMUM_LENGTH;
+            return sa;
+//            log.debug("Invalid action: '{}'", subaction);
+//            return null;
         }
 
         return sa;
