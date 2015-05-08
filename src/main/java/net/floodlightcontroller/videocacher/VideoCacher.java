@@ -279,7 +279,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						& ~OFMatch.OFPFW_DL_SRC
 						& ~OFMatch.OFPFW_DL_DST
 						& ~OFMatch.OFPFW_NW_SRC_MASK
-						& ~OFMatch.OFPFW_NW_DST_MASK;
+						& ~OFMatch.OFPFW_NW_DST_MASK
+ 						& ~OFMatch.OFPFW_TP_SRC
+ 						& ~OFMatch.OFPFW_TP_DST;
  			
  			match2.setWildcards(wildcards1); 
  			
@@ -292,6 +294,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			match2.setNetworkSource(match.getNetworkSource());
  			match2.setNetworkDestination(match.getNetworkDestination());
  			match2.setNetworkTypeOfService(match.getNetworkTypeOfService());
+ 			match2.setTransportSource(match.getTransportSource());
+ 			match2.setTransportDestination(match.getTransportDestination());
  			
  			rule.setMatch(match2);
  			
