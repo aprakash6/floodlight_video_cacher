@@ -453,12 +453,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							 
 		newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 		
 		
-		try {
-				floodlightProvider.getSwitch(ovs21a).write(newRule, null);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
+//		try {
+//				floodlightProvider.getSwitch(ovs21a).write(newRule, null);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}	
 		
+		staticFlowEntryPusher.addFlow("temp", newRule, floodlightProvider.getSwitch(ovs21a).getStringId());
 		
 	}
 	
