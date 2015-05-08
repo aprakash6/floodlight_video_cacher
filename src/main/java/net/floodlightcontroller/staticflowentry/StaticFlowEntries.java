@@ -764,7 +764,7 @@ public class StaticFlowEntries {
     private static SubActionStruct decode_set_dst_port(String subaction, Logger log) {
         SubActionStruct sa = null;
         //Matcher n = Pattern.compile("set-dst-port=((?:0x)?\\d+)").matcher(subaction);
-        Matcher n = Pattern.compile("set-dst-port=-?((?:0x)?\\d+)").matcher(subaction);
+        Matcher n = Pattern.compile("set-dst-port=^-?((?:0x)?\\d+)").matcher(subaction);
         
         log.debug("------subaction is --------{}--------------",subaction);
      
