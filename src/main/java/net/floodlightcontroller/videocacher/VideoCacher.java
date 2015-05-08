@@ -383,6 +383,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	private void addFlowToDuplicateStream()
 	{
 		String swToAddDuplication = floodlightProvider.getSwitch(ovs21b).getStringId();
+		logger.debug("---------------------- " + swToAddDuplication + " ------------");
 		
 		Map<String, OFFlowMod> listOfFlows = new HashMap<String, OFFlowMod>(); 
 		
