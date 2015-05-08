@@ -602,6 +602,12 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							+ OFActionOutput.MINIMUM_LENGTH );
 		
 		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs11b).getStringId() );
+		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs21b).getStringId() );
+		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs22b).getStringId() );
+		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs31b).getStringId() );
+		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs32b).getStringId() );
+		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs33b).getStringId() );
+		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs34b).getStringId() );
 		
 //		try {
 //			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
@@ -615,15 +621,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 //			e.printStackTrace();
 //		}
 		
-//		logger.debug("ovs31b = " + floodlightProvider.getSwitch(ovs31b).getStringId() 
-//				+ "ovs32b = " + floodlightProvider.getSwitch(ovs32b).getStringId()
-//				+ "ovs33b = " + floodlightProvider.getSwitch(ovs33b).getStringId()
-//				+ "ovs34b = " + floodlightProvider.getSwitch(ovs34b).getStringId()
-//				+ "ovs21b = " + floodlightProvider.getSwitch(ovs21b).getStringId()
-//				+ "ovs22b = " + floodlightProvider.getSwitch(ovs22b).getStringId()
-//				+ "ovs11b = " + floodlightProvider.getSwitch(ovs11b).getStringId() );
-		
-		
+
 		OFMatch matchReqHigherSw = new OFMatch();
 		OFFlowMod ruleReqHigherSw = new OFFlowMod();
 		ruleReqHigherSw.setType(OFType.FLOW_MOD);
@@ -644,26 +642,29 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleReqHigherSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
 							+ OFActionOutput.MINIMUM_LENGTH );
 		
-		try {
-			floodlightProvider.getSwitch(ovs31a).write(ruleReqHigherSw, null);
+		
+		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs11a).getStringId() );
+		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs21a).getStringId() );
+		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs22a).getStringId() );
+		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs31a).getStringId() );
+		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs32a).getStringId() );
+		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs33a).getStringId() );
+		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs34a).getStringId() );
+		
+		
+//		try {
+//			floodlightProvider.getSwitch(ovs31a).write(ruleReqHigherSw, null);
 //			floodlightProvider.getSwitch(ovs32a).write(ruleReqHigherSw, null);
 //			floodlightProvider.getSwitch(ovs33a).write(ruleReqHigherSw, null);
 //			floodlightProvider.getSwitch(ovs34a).write(ruleReqHigherSw, null);
 //			floodlightProvider.getSwitch(ovs21a).write(ruleReqHigherSw, null);
 //			floodlightProvider.getSwitch(ovs22a).write(ruleReqHigherSw, null);
 //			floodlightProvider.getSwitch(ovs11a).write(ruleReqHigherSw, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
-//		logger.debug("ovs31a = " + floodlightProvider.getSwitch(ovs31a).getStringId() 
-//				+ "ovs32a = " + floodlightProvider.getSwitch(ovs32a).getStringId()
-//				+ "ovs33a = " + floodlightProvider.getSwitch(ovs33a).getStringId()
-//				+ "ovs34a = " + floodlightProvider.getSwitch(ovs34a).getStringId()
-//				+ "ovs21a = " + floodlightProvider.getSwitch(ovs21a).getStringId()
-//				+ "ovs22a = " + floodlightProvider.getSwitch(ovs22a).getStringId()
-//				+ "ovs11a = " + floodlightProvider.getSwitch(ovs11a).getStringId() );
-		
+
 	}
 
 	@Override
