@@ -443,6 +443,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			logger.debug("----------sw doesnt exist and needs to be added---------");
 			curList.add(ipPortEntry);
 			swToDest.put(sw, curList);
+			logger.debug("----------sw {} is added---------", swToDest.get(sw).get(0).ip);
 		}
 		else
 		{
