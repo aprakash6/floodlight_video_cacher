@@ -579,6 +579,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		//---------------------------------------for all movie requests (lower switch)-----------------------------
 
+		logger.debug("<<<<<<<<<<<<<<<MOVIE REQUESTS ON LOWER SWITCHES>>>>>>>>>>>>");
+		
+		
 		OFMatch matchReqLowerSw = new OFMatch();
 		OFFlowMod ruleReqLowerSw = new OFFlowMod();
 		ruleReqLowerSw.setType(OFType.FLOW_MOD);
@@ -609,21 +612,11 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs32b).getStringId() );
 		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs33b).getStringId() );
 		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs34b).getStringId() );
-		
-//		try {
-//			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs32b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs33b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs34b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs21b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs22b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs11b).write(ruleReqLowerSw, null);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		
+
 		
 		//---------------------------------------for all movie requests (higher switch)-----------------------------
+
+		logger.debug("<<<<<<<<<<<<<<<MOVIE REQUESTS ON HIGHER SWITCHES>>>>>>>>>>>>");
 
 
 		OFMatch matchReqHigherSw = new OFMatch();
@@ -655,21 +648,12 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs33a).getStringId() );
 		staticFlowEntryPusher.addFlow("reqHigherSw", ruleReqHigherSw, floodlightProvider.getSwitch(ovs34a).getStringId() );
 		
-		
-//		try {
-//			floodlightProvider.getSwitch(ovs31a).write(ruleReqHigherSw, null);
-//			floodlightProvider.getSwitch(ovs32a).write(ruleReqHigherSw, null);
-//			floodlightProvider.getSwitch(ovs33a).write(ruleReqHigherSw, null);
-//			floodlightProvider.getSwitch(ovs34a).write(ruleReqHigherSw, null);
-//			floodlightProvider.getSwitch(ovs21a).write(ruleReqHigherSw, null);
-//			floodlightProvider.getSwitch(ovs22a).write(ruleReqHigherSw, null);
-//			floodlightProvider.getSwitch(ovs11a).write(ruleReqHigherSw, null);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		
-		
+
 		//---------------------------------------for UDP downstream movie (higher switch)-----------------------------
+		
+		logger.debug("<<<<<<<<<<<<<<<MOVIE FLOWS ON HIGHER SWITCHES>>>>>>>>>>>>");
+
+		
 		
 		OFMatch matchMovieHigher = new OFMatch();
 		OFFlowMod ruleMovieHigher = new OFFlowMod();
@@ -708,118 +692,126 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		//---------------------------------------for UDP downstream movie (lower switch)-----------------------------
 		
-				OFMatch matchMovieLower = new OFMatch();
-				OFFlowMod ruleMovieLower = new OFFlowMod();
-				ruleMovieLower.setType(OFType.FLOW_MOD);
-				ruleMovieLower.setCommand(OFFlowMod.OFPFC_ADD);
-				ruleMovieLower.setBufferId(OFPacketOut.BUFFER_ID_NONE);
-				ruleMovieLower.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
-				ruleMovieLower.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
-				matchMovieLower.setDataLayerType(Ethernet.TYPE_IPv4);
-				matchMovieLower.setNetworkProtocol(IPv4.PROTOCOL_UDP);
-				matchMovieLower.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-				matchMovieLower.setTransportSource((short) 33333);
-				matchMovieLower.setInputPort(OFPort.OFPP_LOCAL.getValue());
-				//set everything to wildcards except nw_proto and dl_type
-				matchMovieLower.setWildcards(~OFMatch.OFPFW_NW_PROTO 
-										& ~OFMatch.OFPFW_DL_TYPE
-										& ~OFMatch.OFPFW_NW_DST_ALL
-										& ~OFMatch.OFPFW_TP_DST);
-				ruleMovieLower.setMatch(matchMovieLower);
-				ArrayList<OFAction> movieLower = new ArrayList<OFAction>();
-				OFAction outMovieLower = new OFActionOutput((short) 1);
-				movieLower.add(outMovieLower);
-				ruleMovieLower.setActions(movieLower);
-				ruleMovieLower.setLengthU(OFFlowMod.MINIMUM_LENGTH
-									+ OFActionOutput.MINIMUM_LENGTH );
+		logger.debug("<<<<<<<<<<<<<<<MOVIE FLOWS ON LOWER SWITCHES>>>>>>>>>>>>");
+
+		
+		OFMatch matchMovieLower = new OFMatch();
+		OFFlowMod ruleMovieLower = new OFFlowMod();
+		ruleMovieLower.setType(OFType.FLOW_MOD);
+		ruleMovieLower.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleMovieLower.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleMovieLower.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleMovieLower.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		matchMovieLower.setDataLayerType(Ethernet.TYPE_IPv4);
+		matchMovieLower.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		matchMovieLower.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+		matchMovieLower.setTransportSource((short) 33333);
+		matchMovieLower.setInputPort(OFPort.OFPP_LOCAL.getValue());
+		//set everything to wildcards except nw_proto and dl_type
+		matchMovieLower.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+									& ~OFMatch.OFPFW_DL_TYPE
+									& ~OFMatch.OFPFW_NW_DST_ALL
+									& ~OFMatch.OFPFW_TP_DST);
+		ruleMovieLower.setMatch(matchMovieLower);
+		ArrayList<OFAction> movieLower = new ArrayList<OFAction>();
+		OFAction outMovieLower = new OFActionOutput((short) 1);
+		movieLower.add(outMovieLower);
+		ruleMovieLower.setActions(movieLower);
+		ruleMovieLower.setLengthU(OFFlowMod.MINIMUM_LENGTH
+								+ OFActionOutput.MINIMUM_LENGTH );
 				
-				//Added the rule for the main OVS on the source as well
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
-				
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs21b).getStringId() );
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs22b).getStringId() );
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs31b).getStringId() );
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs32b).getStringId() );
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs33b).getStringId() );
-				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs34b).getStringId() );
-				
-				
+		//Added the rule for the main OVS on the source as well
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
+		
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs21b).getStringId() );
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs22b).getStringId() );
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs31b).getStringId() );
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs32b).getStringId() );
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs33b).getStringId() );
+		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs34b).getStringId() );
+					
+					
 				//---------------------------------------for backlogs (higher switch)-----------------------------
-				
-				OFMatch matchBacklogHigher = new OFMatch();
-				OFFlowMod ruleBacklogHigher = new OFFlowMod();
-				ruleBacklogHigher.setType(OFType.FLOW_MOD);
-				ruleBacklogHigher.setCommand(OFFlowMod.OFPFC_ADD);
-				ruleBacklogHigher.setBufferId(OFPacketOut.BUFFER_ID_NONE);
-				ruleBacklogHigher.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
-				ruleBacklogHigher.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
-				matchBacklogHigher.setDataLayerType(Ethernet.TYPE_IPv4);
-				matchBacklogHigher.setNetworkProtocol(IPv4.PROTOCOL_UDP);
-				matchBacklogHigher.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-				matchBacklogHigher.setTransportSource((short) 44444);
-				matchBacklogHigher.setInputPort((short) 1);
-				//set everything to wildcards except nw_proto and dl_type
-				matchBacklogHigher.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+		
+		logger.debug("<<<<<<<<<<<<<<<BACKLOGS ON HIGHER SWITCHES>>>>>>>>>>>>");
+
+		OFMatch matchBacklogHigher = new OFMatch();
+		OFFlowMod ruleBacklogHigher = new OFFlowMod();
+		ruleBacklogHigher.setType(OFType.FLOW_MOD);
+		ruleBacklogHigher.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleBacklogHigher.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleBacklogHigher.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleBacklogHigher.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		matchBacklogHigher.setDataLayerType(Ethernet.TYPE_IPv4);
+		matchBacklogHigher.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		matchBacklogHigher.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+		matchBacklogHigher.setTransportSource((short) 44444);
+		matchBacklogHigher.setInputPort((short) 1);
+		//set everything to wildcards except nw_proto and dl_type
+		matchBacklogHigher.setWildcards(~OFMatch.OFPFW_NW_PROTO 
 										& ~OFMatch.OFPFW_DL_TYPE
 										& ~OFMatch.OFPFW_NW_DST_ALL
 										& ~OFMatch.OFPFW_TP_DST);
-				ruleBacklogHigher.setMatch(matchBacklogHigher);
-				ArrayList<OFAction> backlogHigher = new ArrayList<OFAction>();
-				OFAction outBacklogHigher = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
-				backlogHigher.add(outBacklogHigher);
-				ruleBacklogHigher.setActions(backlogHigher);
-				ruleBacklogHigher.setLengthU(OFFlowMod.MINIMUM_LENGTH
+		ruleBacklogHigher.setMatch(matchBacklogHigher);
+		ArrayList<OFAction> backlogHigher = new ArrayList<OFAction>();
+		OFAction outBacklogHigher = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
+		backlogHigher.add(outBacklogHigher);
+		ruleBacklogHigher.setActions(backlogHigher);
+		ruleBacklogHigher.setLengthU(OFFlowMod.MINIMUM_LENGTH
 									+ OFActionOutput.MINIMUM_LENGTH );
 				
 				
-				staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs11a).getStringId() );
-				staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs21a).getStringId() );
-				staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs22a).getStringId() );
-				staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs31a).getStringId() );
-				staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs32a).getStringId() );
-				staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs33a).getStringId() );
-				staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs34a).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs11a).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs21a).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs22a).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs31a).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs32a).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs33a).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogHigher", ruleBacklogHigher, floodlightProvider.getSwitch(ovs34a).getStringId() );
 				
 				
-				//---------------------------------------for backlogs (lower switch)-----------------------------
-				
-						OFMatch matchBacklogLower = new OFMatch();
-						OFFlowMod ruleBacklogLower = new OFFlowMod();
-						ruleBacklogLower.setType(OFType.FLOW_MOD);
-						ruleBacklogLower.setCommand(OFFlowMod.OFPFC_ADD);
-						ruleBacklogLower.setBufferId(OFPacketOut.BUFFER_ID_NONE);
-						ruleBacklogLower.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
-						ruleBacklogLower.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
-						matchBacklogLower.setDataLayerType(Ethernet.TYPE_IPv4);
-						matchBacklogLower.setNetworkProtocol(IPv4.PROTOCOL_UDP);
-						matchBacklogLower.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-						matchBacklogLower.setTransportSource((short) 44444);
-						matchBacklogLower.setInputPort(OFPort.OFPP_LOCAL.getValue());
-						//set everything to wildcards except nw_proto and dl_type
-						matchBacklogLower.setWildcards(~OFMatch.OFPFW_NW_PROTO 
-												& ~OFMatch.OFPFW_DL_TYPE
-												& ~OFMatch.OFPFW_NW_DST_ALL
-												& ~OFMatch.OFPFW_TP_DST);
-						ruleBacklogLower.setMatch(matchBacklogLower);
-						ArrayList<OFAction> backlogLower = new ArrayList<OFAction>();
-						OFAction outBacklogLower = new OFActionOutput((short) 1);
-						backlogLower.add(outBacklogLower);
-						ruleBacklogLower.setActions(backlogLower);
-						ruleBacklogLower.setLengthU(OFFlowMod.MINIMUM_LENGTH
-											+ OFActionOutput.MINIMUM_LENGTH );
+		//---------------------------------------for backlogs (lower switch)-----------------------------
+		
+		logger.debug("<<<<<<<<<<<<<<<MOVIE FLOWS ON LOWER SWITCHES>>>>>>>>>>>>");
+		
+
+		OFMatch matchBacklogLower = new OFMatch();
+		OFFlowMod ruleBacklogLower = new OFFlowMod();
+		ruleBacklogLower.setType(OFType.FLOW_MOD);
+		ruleBacklogLower.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleBacklogLower.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleBacklogLower.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleBacklogLower.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		matchBacklogLower.setDataLayerType(Ethernet.TYPE_IPv4);
+		matchBacklogLower.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		matchBacklogLower.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+		matchBacklogLower.setTransportSource((short) 44444);
+		matchBacklogLower.setInputPort(OFPort.OFPP_LOCAL.getValue());
+		//set everything to wildcards except nw_proto and dl_type
+		matchBacklogLower.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+										& ~OFMatch.OFPFW_DL_TYPE
+										& ~OFMatch.OFPFW_NW_DST_ALL
+										& ~OFMatch.OFPFW_TP_DST);
+		ruleBacklogLower.setMatch(matchBacklogLower);
+		ArrayList<OFAction> backlogLower = new ArrayList<OFAction>();
+		OFAction outBacklogLower = new OFActionOutput((short) 1);
+		backlogLower.add(outBacklogLower);
+		ruleBacklogLower.setActions(backlogLower);
+		ruleBacklogLower.setLengthU(OFFlowMod.MINIMUM_LENGTH
+									+ OFActionOutput.MINIMUM_LENGTH );
 						
-						//Added the rule for the main OVS on the source as well
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
+		//Added the rule for the main OVS on the source as well
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
 						
-						
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs21b).getStringId() );
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs22b).getStringId() );
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs31b).getStringId() );
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs32b).getStringId() );
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs33b).getStringId() );
-						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs34b).getStringId() );
+		
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs21b).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs22b).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs31b).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs32b).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs33b).getStringId() );
+		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs34b).getStringId() );
 						
 	}
 
