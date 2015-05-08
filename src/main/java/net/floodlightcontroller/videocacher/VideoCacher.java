@@ -66,8 +66,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	private final String rootSw = "";
 	private final String childSw = "";
 	
-	private final static String ROOT_IP = "10.10.1.2";
-	private final static String ROOT_MAC = "42:5a:eb:06:7a:47";
+	private final static String ROOT_IP = "10.10.1.1";
+	private final static String ROOT_MAC = "52:19:b4:43:7d:42";
 	
 	private final static String CHILD_UP_IP = "10.10.1.1";
 	private final static String CHILD_UP_MAC = "";
