@@ -391,6 +391,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		OFFlowMod curFlow = listOfFlows.get("MovieLower");
 		
+		logger.debug("---------------------- " + curFlow + " ------------");
+		
 		ArrayList<OFAction> curActions = new ArrayList<OFAction>();
 		curActions = (ArrayList<OFAction>) curFlow.getActions();
 		Iterator itr = curActions.iterator();
