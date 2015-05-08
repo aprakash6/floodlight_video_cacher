@@ -601,25 +601,25 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleReqLowerSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
 							+ OFActionOutput.MINIMUM_LENGTH );
 		
-		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs11b).getStringId() );
-		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs21b).getStringId() );
-		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs22b).getStringId() );
-		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs31b).getStringId() );
-		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs32b).getStringId() );
-		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs33b).getStringId() );
-		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs34b).getStringId() );
+//		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs11b).getStringId() );
+//		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs21b).getStringId() );
+//		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs22b).getStringId() );
+//		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs31b).getStringId() );
+//		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs32b).getStringId() );
+//		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs33b).getStringId() );
+//		staticFlowEntryPusher.addFlow("reqLowerSw", ruleReqLowerSw, floodlightProvider.getSwitch(ovs34b).getStringId() );
 		
-//		try {
-//			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs32b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs33b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs34b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs21b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs22b).write(ruleReqLowerSw, null);
-//			floodlightProvider.getSwitch(ovs11b).write(ruleReqLowerSw, null);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		try {
+			floodlightProvider.getSwitch(ovs31b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs32b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs33b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs34b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs21b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs22b).write(ruleReqLowerSw, null);
+			floodlightProvider.getSwitch(ovs11b).write(ruleReqLowerSw, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 
 		OFMatch matchReqHigherSw = new OFMatch();

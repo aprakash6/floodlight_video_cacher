@@ -18,24 +18,15 @@
 package org.openflow.protocol;
 
 public enum OFPort {
-//    OFPP_MAX                ((short)0xff00),
-//    OFPP_IN_PORT            ((short)0xfff8),
-//    OFPP_TABLE              ((short)0xfff9),
-//    OFPP_NORMAL             ((short)0xfffa),
-//    OFPP_FLOOD              ((short)0xfffb),
-//    OFPP_ALL                ((short)0xfffc),
-//    OFPP_CONTROLLER         ((short)0xfffd),
-//    OFPP_LOCAL              ((short)0xfffe),
-//    OFPP_NONE               ((short)0xffff);
-	OFPP_MAX                ((short)0x01ff),
-    OFPP_IN_PORT            ((short)0x02ff),
-    OFPP_TABLE              ((short)0x03ff),
-    OFPP_NORMAL             ((short)0x04ff),
-    OFPP_FLOOD              ((short)0x06ff),
-    OFPP_ALL                ((short)0x07ff),
-    OFPP_CONTROLLER         ((short)0x08ff),
-    OFPP_LOCAL              ((short)0x09ff),
-    OFPP_NONE               ((short)0x0aff);
+    OFPP_MAX                ((short)0xff00),
+    OFPP_IN_PORT            ((short)0xfff8),
+    OFPP_TABLE              ((short)0xfff9),
+    OFPP_NORMAL             ((short)0xfffa),
+    OFPP_FLOOD              ((short)0xfffb),
+    OFPP_ALL                ((short)0xfffc),
+    OFPP_CONTROLLER         ((short)0xfffd),
+    OFPP_LOCAL              ((short)0xfffe),
+    OFPP_NONE               ((short)0xffff);
 
     protected short value;
 
