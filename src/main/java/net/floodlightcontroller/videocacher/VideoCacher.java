@@ -432,6 +432,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		if ( swToDest.containsKey(sw) && sw!=null )
 		{
+			logger.debug("----------sw already exists in mapping---------");
 			curList = swToDest.get(sw);
 			curList.add(ipPortEntry);
 			swToDest.put(sw, curList);
@@ -439,6 +440,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		else if ( !swToDest.containsKey(sw) && sw!=null )
 		{
+			logger.debug("----------sw doesnt exist and needs to be added---------");
 			curList.add(ipPortEntry);
 			swToDest.put(sw, curList);
 		}
