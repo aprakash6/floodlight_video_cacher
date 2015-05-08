@@ -46,11 +46,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	{
 		public String ip;
 		public short port;
+		public String mac;
 		
 		public TableEntry()
 		{
 			this.ip = "";
 			this.port = 0;
+			this.mac = "";
 		}
 	}
 	
@@ -249,6 +251,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
         TableEntry ipPortEntry = new TableEntry();
         ipPortEntry.ip = srcIp;
         ipPortEntry.port = srcPort;
+        ipPortEntry.mac = match.getDataLayerDestination().toString();
         
         String entryVal = ipPortEntry.ip + ipPortEntry.port;
         
@@ -362,7 +365,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			 to go through---------------------------------------------------------------------------*/
  			
  			if (flowCount > 1)
- 				this.addFlowToDuplicateStream();
+ 				this.addFlowToDuplicateStream(ipPortEntry);
  			
  			
  			try {
@@ -380,44 +383,89 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	}
 	
 	
-	private void addFlowToDuplicateStream()
+	private void addFlowToDuplicateStream(TableEntry ipPortMacEntry)
 	{
-		String swToAddDuplication = floodlightProvider.getSwitch(ovs21b).getStringId();
-		logger.debug("---------------------- " + swToAddDuplication + " ------------");
-		
-		Map<String, OFFlowMod> listOfFlows = new HashMap<String, OFFlowMod>(); 
-		
-		listOfFlows = staticFlowEntryPusher.getFlows(swToAddDuplication);
-		
-		logger.debug("---------------------- " + listOfFlows + " ------------");
-		
-		OFFlowMod curFlow = new OFFlowMod(); 
-		curFlow = listOfFlows.get("MovieLower");
-		
-		logger.debug("---------------------- " + curFlow + " ------------");
-		
-		ArrayList<OFAction> curActions = new ArrayList<OFAction>();
-		curActions = (ArrayList<OFAction>) curFlow.getActions();
-		Iterator itr = curActions.iterator();
-	      while(itr.hasNext()) {
-	         OFAction ele = (OFAction) itr.next();
-	         logger.debug("---------------------- " + ele + " ------------");
-	      }
-		
-//		OFMatch curMatch = new OFMatch();
-//		curMatch = curFlow.getMatch();
+//		String swToAddDuplication = floodlightProvider.getSwitch(ovs21b).getStringId();
+//		logger.debug("---------------------- " + swToAddDuplication + " ------------");
 //		
-//		OFMatch newMatch = new OFMatch();
-//		OFFlowMod newRule = new OFFlowMod();
-//		newRule.setType(OFType.FLOW_MOD);
-//		newRule.setCommand(OFFlowMod.OFPFC_ADD);
-//		newRule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
-//		newRule.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
-//		newRule.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
-//		newRule.setMatch(curMatch);
+//		Map<String, OFFlowMod> listOfFlows = new HashMap<String, OFFlowMod>(); 
 //		
-//		ArrayList<OFAction> newActions = new ArrayList<OFAction>();
+//		listOfFlows = staticFlowEntryPusher.getFlows(swToAddDuplication);
 //		
+//		logger.debug("---------------------- " + listOfFlows + " ------------");
+//		
+//		OFFlowMod curFlow = new OFFlowMod(); 
+//		curFlow = listOfFlows.get("MovieLower");
+//		
+//		logger.debug("---------------------- " + curFlow + " ------------");
+//		
+//		ArrayList<OFAction> curActions = new ArrayList<OFAction>();
+//		curActions = (ArrayList<OFAction>) curFlow.getActions();
+//		Iterator itr = curActions.iterator();
+//	      while(itr.hasNext()) {
+//	         OFAction ele = (OFAction) itr.next();
+//	         logger.debug("---------------------- " + ele + " ------------");
+//	      }
+	
+		
+		OFMatch newMatch = new OFMatch();
+		OFFlowMod newRule = new OFFlowMod();
+		newRule.setType(OFType.FLOW_MOD);
+		newRule.setCommand(OFFlowMod.OFPFC_ADD);
+		newRule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		newRule.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		newRule.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+		newMatch.setDataLayerType(Ethernet.TYPE_IPv4);
+		newMatch.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		newMatch.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+		newMatch.setTransportSource((short) 33333);
+		newMatch.setInputPort(OFPort.OFPP_LOCAL.getValue());
+		//set everything to wildcards except nw_proto and dl_type
+		newMatch.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+									& ~OFMatch.OFPFW_DL_TYPE
+									& ~OFMatch.OFPFW_NW_DST_ALL
+									& ~OFMatch.OFPFW_TP_DST);
+		newRule.setMatch(newMatch);
+		
+		ArrayList<OFAction> newActions = new ArrayList<OFAction>();
+		OFAction outOrig = new OFActionOutput((short) 1);
+		newActions.add(outOrig);
+		
+		OFActionDataLayerDestination dlDst = new OFActionDataLayerDestination();
+		OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
+		OFActionTransportLayerDestination tlDst = new OFActionTransportLayerDestination();
+		
+		dlDst.setDataLayerAddress(Ethernet.toMACAddress(ipPortMacEntry.mac));
+		nwDst.setNetworkAddress(IPv4.toIPv4Address(ipPortMacEntry.ip));
+		tlDst.setTransportPort(ipPortMacEntry.port);
+		
+		OFAction outNew = new OFActionOutput((short) 1);
+		newActions.add(outNew);
+		
+		newActions.add(dlDst);
+		newActions.add(nwDst);
+		newActions.add(outNew);
+		
+		newRule.setActions(newActions);
+		
+		int actionsLength = ( OFActionOutput.MINIMUM_LENGTH + 
+							  //OFActionDataLayerSource.MINIMUM_LENGTH + 
+							  OFActionDataLayerDestination.MINIMUM_LENGTH + 
+							  //OFActionNetworkLayerSource.MINIMUM_LENGTH + 
+							  OFActionNetworkLayerDestination.MINIMUM_LENGTH + 
+							  //OFActionTransportLayerSource.MINIMUM_LENGTH + 
+							  OFActionTransportLayerDestination.MINIMUM_LENGTH);
+							  
+							 
+		newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 		
+		
+		try {
+				floodlightProvider.getSwitch(ovs21b).write(newRule, null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		
+		
 	}
 	
 
@@ -685,7 +733,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				
 		//---------------------------------------for backlogs (lower switch)-----------------------------
 		
-		logger.debug("<<<<<<<<<<<<<<<MOVIE FLOWS ON LOWER SWITCHES>>>>>>>>>>>>");
+		logger.debug("<<<<<<<<<<<<<<<BACKLOGS ON LOWER SWITCHES>>>>>>>>>>>>");
 		
 
 		OFMatch matchBacklogLower = new OFMatch();
