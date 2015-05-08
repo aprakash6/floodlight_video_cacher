@@ -595,7 +595,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 									 ~OFMatch.OFPFW_TP_DST);
 		ruleReqLowerSw.setMatch(matchReqLowerSw);
 		ArrayList<OFAction> reqLowerSwActions = new ArrayList<OFAction>();
-		OFAction outReqLowerSw = new OFActionOutput(OFPort.OFPP_NORMAL.getValue());
+		OFAction outReqLowerSw = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
 		reqLowerSwActions.add(outReqLowerSw);
 		ruleReqLowerSw.setActions(reqLowerSwActions);
 		ruleReqLowerSw.setLengthU(OFFlowMod.MINIMUM_LENGTH
