@@ -733,6 +733,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				ruleMovieLower.setLengthU(OFFlowMod.MINIMUM_LENGTH
 									+ OFActionOutput.MINIMUM_LENGTH );
 				
+				//Added the rule for the main OVS on the source as well
+				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
 				
 				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
 				staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs21b).getStringId() );
@@ -806,6 +808,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						ruleBacklogLower.setActions(backlogLower);
 						ruleBacklogLower.setLengthU(OFFlowMod.MINIMUM_LENGTH
 											+ OFActionOutput.MINIMUM_LENGTH );
+						
+						//Added the rule for the main OVS on the source as well
+						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
 						
 						
 						staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
