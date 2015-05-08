@@ -46,13 +46,11 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	{
 		public String ip;
 		public short port;
-		public byte[] mac;
 		
 		public TableEntry()
 		{
 			this.ip = "";
 			this.port = 0;
-			this.mac = "00:00:00:00:00:00".getBytes();
 		}
 	}
 	
@@ -251,8 +249,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
         TableEntry ipPortEntry = new TableEntry();
         ipPortEntry.ip = srcIp;
         ipPortEntry.port = srcPort;
-        ipPortEntry.mac = Ethernet.toByteArray(sourceMac);
-        
+         
         String entryVal = ipPortEntry.ip + ipPortEntry.port;
         
         if(!macTable.containsKey(ipPortEntry))
@@ -383,7 +380,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	}
 	
 	
-	private void addFlowToDuplicateStream(TableEntry ipPortMacEntry)
+	private void addFlowToDuplicateStream(TableEntry ipPortEntry)
 	{
 //		String swToAddDuplication = floodlightProvider.getSwitch(ovs21b).getStringId();
 //		logger.debug("---------------------- " + swToAddDuplication + " ------------");
@@ -419,7 +416,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		newMatch.setNetworkProtocol(IPv4.PROTOCOL_UDP);
 		newMatch.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
 		newMatch.setTransportSource((short) 33333);
-		newMatch.setInputPort(OFPort.OFPP_LOCAL.getValue());
+		newMatch.setInputPort((short) 1);
 		//set everything to wildcards except nw_proto and dl_type
 		newMatch.setWildcards(~OFMatch.OFPFW_NW_PROTO 
 									& ~OFMatch.OFPFW_DL_TYPE
@@ -428,21 +425,18 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		newRule.setMatch(newMatch);
 		
 		ArrayList<OFAction> newActions = new ArrayList<OFAction>();
-		OFAction outOrig = new OFActionOutput((short) 1);
+		OFAction outOrig = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
 		newActions.add(outOrig);
 		
-		OFActionDataLayerDestination dlDst = new OFActionDataLayerDestination();
 		OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
 		OFActionTransportLayerDestination tlDst = new OFActionTransportLayerDestination();
 		
-		dlDst.setDataLayerAddress(ipPortMacEntry.mac);
-		nwDst.setNetworkAddress(IPv4.toIPv4Address(ipPortMacEntry.ip));
-		tlDst.setTransportPort(ipPortMacEntry.port);
+		nwDst.setNetworkAddress(IPv4.toIPv4Address(ipPortEntry.ip));
+		tlDst.setTransportPort(ipPortEntry.port);
 		
-		OFAction outNew = new OFActionOutput((short) 1);
+		OFAction outNew = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
 		newActions.add(outNew);
 		
-		newActions.add(dlDst);
 		newActions.add(nwDst);
 		newActions.add(outNew);
 		
@@ -450,7 +444,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		int actionsLength = ( OFActionOutput.MINIMUM_LENGTH + 
 							  //OFActionDataLayerSource.MINIMUM_LENGTH + 
-							  OFActionDataLayerDestination.MINIMUM_LENGTH + 
+							  //OFActionDataLayerDestination.MINIMUM_LENGTH + 
 							  //OFActionNetworkLayerSource.MINIMUM_LENGTH + 
 							  OFActionNetworkLayerDestination.MINIMUM_LENGTH + 
 							  //OFActionTransportLayerSource.MINIMUM_LENGTH + 
@@ -460,7 +454,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 		
 		
 		try {
-				floodlightProvider.getSwitch(ovs21b).write(newRule, null);
+				floodlightProvider.getSwitch(ovs21a).write(newRule, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}	
