@@ -766,9 +766,12 @@ public class StaticFlowEntries {
         Matcher n = Pattern.compile("set-dst-port=((?:0x)?\\d+)").matcher(subaction);
         
         log.debug("------subaction is --------{}--------------",subaction);
+     //   log.debug("------subaction is --------{}--------------",n.);
 
-        if (n.matches()) {
+        if (n.matches()) {	
+        	log.debug("------entring n.matches()--------------");
             if (n.group(1) != null) {
+            	log.debug("------entring n.group(1)--------------");
                 try {
                     short portnum = get_short(n.group(1));
                     OFActionTransportLayerDestination action = new OFActionTransportLayerDestination();
@@ -786,15 +789,15 @@ public class StaticFlowEntries {
             }
         }
         else {
-        	short portnum = get_short(n.group(1));
-            OFActionTransportLayerDestination action = new OFActionTransportLayerDestination();
-            action.setTransportPort(portnum);
-        	sa = new SubActionStruct();
-            sa.action = action;
-            sa.len = OFActionTransportLayerDestination.MINIMUM_LENGTH;
-            return sa;
-//            log.debug("Invalid action: '{}'", subaction);
-//            return null;
+//        	short portnum = get_short(n.group(1));
+//            OFActionTransportLayerDestination action = new OFActionTransportLayerDestination();
+//            action.setTransportPort(portnum);
+//        	sa = new SubActionStruct();
+//            sa.action = action;
+//            sa.len = OFActionTransportLayerDestination.MINIMUM_LENGTH;
+//            return sa;
+            log.debug("Invalid action: '{}'", subaction);
+            return null;
         }
 
         return sa;
