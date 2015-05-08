@@ -506,12 +506,12 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		curList = swToDest.get(swFlowModified);
 		
 		for (int i = 0; i < curList.size(); i++) {
-			logger.debug("COMing inside for loop----------{}-------------{}-------",
+			logger.debug("COMing inside for loop----------{}-------------??{}??-------",
 					curList.get(i).ip, curList.get(i).port );
 			OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
 			nwDst.setNetworkAddress(IPv4.toIPv4Address(curList.get(i).ip));
 			OFActionTransportLayerDestination tpDst = new OFActionTransportLayerDestination();
-			tpDst.setTransportPort(curList.get(i).port);
+			tpDst.setTransportPort((short)curList.get(i).port);
 			OFAction outNew = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
 			newActions.add(nwDst);
 			newActions.add(tpDst);
