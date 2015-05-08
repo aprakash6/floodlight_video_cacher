@@ -439,7 +439,8 @@ public class StaticFlowEntries {
         if (n.matches()) {
             OFActionOutput action = new OFActionOutput();
             action.setMaxLength((short) Short.MAX_VALUE);
-            short port = OFPort.OFPP_NONE.getValue();
+//            short port = OFPort.OFPP_NONE.getValue();
+            short port = OFPort.OFPP_LOCAL.getValue();
             if (n.group(1) != null) {
                 try {
                     port = get_short(n.group(1));
