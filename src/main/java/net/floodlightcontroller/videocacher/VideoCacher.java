@@ -435,7 +435,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		tlDst.setTransportPort(ipPortEntry.port);
 		
 		OFAction outNew = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
-		newActions.add(outNew);
 		
 		newActions.add(nwDst);
 		newActions.add(outNew);
