@@ -503,9 +503,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		int actionsLength = 0;
 		
 		List<TableEntry> curList = new ArrayList<TableEntry>();
+		curList = swToDest.get(swFlowModified);
 		
 		for (int i = 0; i < curList.size(); i++) {
-			logger.debug("COMing inside for loop----------{}-------------{}-------{}--{}",
+			logger.debug("COMing inside for loop----------{}-------------{}-------",
 					curList.get(i).ip, curList.get(i).port );
 			OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
 			nwDst.setNetworkAddress(IPv4.toIPv4Address(curList.get(i).ip));
