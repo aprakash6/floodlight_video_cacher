@@ -471,7 +471,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						
 					}
 					
-					line = br.readLine();		
+					if ( ( line = br.readLine() ) == null )
+						break;
 				}
 				
 				//break;
