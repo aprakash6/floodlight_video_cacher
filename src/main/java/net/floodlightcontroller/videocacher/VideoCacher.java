@@ -56,6 +56,21 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			this.ip = "";
 			this.port = 0;
 		}
+
+		public boolean equals(TableEntry other) 
+		{
+		    if (!(other instanceof TableEntry)) 
+		    {
+		        return false;
+		    }
+
+		    TableEntry that = (TableEntry) other;
+
+		    // Custom equality check here.
+		    return this.ip.equals(that.ip)
+		        && (this.port == that.port);
+		}
+
 	}
 	
 	protected Map<String, byte[]> macTable;
@@ -468,6 +483,19 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						sw = var2;
 						modifiedSwitches.add(sw);
 						clientId = Integer.parseInt(var3);
+						
+						TableEntry entryToBeRemoved = clientList.get(clientId);
+						curList = swToDest.get(sw);
+						
+						for (Iterator<TableEntry> iterator = curList.iterator(); iterator.hasNext();) 
+						{
+						    TableEntry cur = iterator.next();
+						    if ( cur.equals(entryToBeRemoved) ) 
+						    {
+						        // Remove the current element from the iterator and the list.
+						        iterator.remove();
+						    }
+						}
 						
 					}
 					
