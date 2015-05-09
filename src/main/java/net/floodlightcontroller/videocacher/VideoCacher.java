@@ -425,6 +425,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					continue;
 				
 				localCnt++;
+				logger.debug("??????localcnt = {}, lineCnt = {}, lineEmpty = {} ???????", 
+					Integer.toString(localCnt), Integer.toString(lineCnt) );
+				
 				while ( localCnt == lineCnt  && !line.isEmpty() )
 				{
 					logger.debug("??????entered innerWhile ???????");
