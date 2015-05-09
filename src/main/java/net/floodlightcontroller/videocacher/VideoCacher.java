@@ -421,6 +421,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			while ((line = br.readLine()) != null) 
 			{
 				logger.debug("??????entered outerWhile ???????");
+				
 				if ( line.isEmpty() )
 					continue;
 				
@@ -473,7 +474,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					line = br.readLine();		
 				}
 				
-				break;
+				//break;
 			}
 			
 		} 
