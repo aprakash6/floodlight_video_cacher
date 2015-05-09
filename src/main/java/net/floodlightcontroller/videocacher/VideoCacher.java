@@ -59,7 +59,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	}
 	
 	protected Map<String, byte[]> macTable;
-	
+	protected Map<Integer, TableEntry> clientList;
 	protected Map<String, List<TableEntry>> swToDest;
 	
 	protected Map<Integer, OFFlowMod> ruleTable;
@@ -159,6 +159,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	    ruleTable = new HashMap <Integer, OFFlowMod>();
 	    flowCount = 0;
 	    swToDest = new HashMap <String, List<TableEntry>>();
+	    clientList = new HashMap <Integer, TableEntry>();
 		
 	}
 
@@ -239,6 +240,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		flowCount++;
 		
+		
 		// Read in packet data headers by using an OFMatch structure
         OFMatch match = new OFMatch();
         match.loadFromPacket(pi.getPacketData(), pi.getInPort());		
@@ -258,7 +260,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
         TableEntry ipPortEntry = new TableEntry();
         ipPortEntry.ip = srcIp;
         ipPortEntry.port = srcPort;
-         
+        
+        clientList.put(flowCount, ipPortEntry);
+        
         String entryVal = ipPortEntry.ip + ipPortEntry.port;
         
         if(!macTable.containsKey(ipPortEntry))
@@ -372,8 +376,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			
  		if (flowCount > 1)
  		{	
- 			String swFlowModified = this.updateSwitchesToDestinationMapping(ipPortEntry);
- 			this.addFlowToDuplicateStream(ipPortEntry, swFlowModified);
+ 			List<String> modifiedSwitches = this.updateSwitchesToDestinationMapping();
+ 			this.addFlowToDuplicateStream(modifiedSwitches);
  		}
  			
  			
@@ -391,8 +395,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		return Command.CONTINUE;
 	}
 	
-	private String updateSwitchesToDestinationMapping(TableEntry ipPortEntry)
+	private List<String> updateSwitchesToDestinationMapping()
 	{
+		List<String> modifiedSwitches = new ArrayList<String>();
 		List<TableEntry> curList = new ArrayList<TableEntry>();
 		lineCnt++;
 		Integer localCnt = 0;
@@ -406,6 +411,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		BufferedReader br = new BufferedReader(fr);
 		
 		String sw = null;
+		Integer clientId = 0;
 		
 		try 
 		{
@@ -413,15 +419,51 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			while ((line = br.readLine()) != null) 
 			{
 				localCnt++;
-				if ( localCnt == lineCnt )
+				while ( localCnt == lineCnt  && !line.isEmpty() )
 				{
 					String [] tokens = line.split("\\s+"); //any number of blank spaces
-					String var_1 = tokens[0];
-					sw = var_1;
-					break;		
+					String var1 = tokens[0];
+					String var2 = tokens[1];
+					String var3 = tokens[2];
+					//sw = var1;
+					
+					if ( var1.equalsIgnoreCase("start") )
+					{
+						logger.debug("??????IN THE START CASE???????");
+						sw = var2;
+						modifiedSwitches.add(sw);
+						clientId = Integer.parseInt(var3);
+						TableEntry latestEntry = clientList.get(clientId);
+						if ( swToDest.containsKey(sw) )
+						{
+							logger.debug("----------sw already exists in mapping---------");
+							curList = swToDest.get(sw);
+							curList.add(latestEntry);
+							swToDest.put(sw, curList);
+						}
+						else
+						{
+							logger.debug("----------sw doesnt exist and needs to be added---------");
+							curList.add(latestEntry);
+							swToDest.put(sw, curList);
+							logger.debug("----------sw {} is added---------", swToDest.get(sw).get(0).ip);
+						}
+						
+					}
+					
+					if ( var1.equalsIgnoreCase("stop") )
+					{
+						logger.debug("??????IN THE STOP CASE???????");
+						sw = var2;
+						modifiedSwitches.add(sw);
+						clientId = Integer.parseInt(var3);
+						
+					}
+					
+					line = br.readLine();		
 				}
-				else
-					continue;
+				
+				break;
 			}
 			
 		} 
@@ -430,54 +472,32 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				e.printStackTrace();
 		}
 		
-		if ( swToDest.containsKey(sw) && sw!=null )
-		{
-			logger.debug("----------sw already exists in mapping---------");
-			curList = swToDest.get(sw);
-			curList.add(ipPortEntry);
-			swToDest.put(sw, curList);
-		}
+//		if ( swToDest.containsKey(sw) && sw!=null )
+//		{
+//			logger.debug("----------sw already exists in mapping---------");
+//			curList = swToDest.get(sw);
+//			curList.add(ipPortEntry);
+//			swToDest.put(sw, curList);
+//		}
+//		
+//		else if ( !swToDest.containsKey(sw) && sw!=null )
+//		{
+//			logger.debug("----------sw doesnt exist and needs to be added---------");
+//			curList.add(ipPortEntry);
+//			swToDest.put(sw, curList);
+//			logger.debug("----------sw {} is added---------", swToDest.get(sw).get(0).ip);
+//		}
+//		else
+//		{
+//			logger.debug("----------no more entries---------");
+//		}
 		
-		else if ( !swToDest.containsKey(sw) && sw!=null )
-		{
-			logger.debug("----------sw doesnt exist and needs to be added---------");
-			curList.add(ipPortEntry);
-			swToDest.put(sw, curList);
-			logger.debug("----------sw {} is added---------", swToDest.get(sw).get(0).ip);
-		}
-		else
-		{
-			logger.debug("----------no more entries---------");
-		}
-		
-		return sw;
+		return modifiedSwitches;
 	}
 	
-	private void addFlowToDuplicateStream(TableEntry ipPortEntry, String swFlowModified)
+	private void addFlowToDuplicateStream(List<String> modifiedSwitches)
 	{
-//		String swToAddDuplication = floodlightProvider.getSwitch(ovs21b).getStringId();
-//		logger.debug("---------------------- " + swToAddDuplication + " ------------");
-//		
-//		Map<String, OFFlowMod> listOfFlows = new HashMap<String, OFFlowMod>(); 
-//		
-//		listOfFlows = staticFlowEntryPusher.getFlows(swToAddDuplication);
-//		
-//		logger.debug("---------------------- " + listOfFlows + " ------------");
-//		
-//		OFFlowMod curFlow = new OFFlowMod(); 
-//		curFlow = listOfFlows.get("MovieLower");
-//		
-//		logger.debug("---------------------- " + curFlow + " ------------");
-//		
-//		ArrayList<OFAction> curActions = new ArrayList<OFAction>();
-//		curActions = (ArrayList<OFAction>) curFlow.getActions();
-//		Iterator itr = curActions.iterator();
-//	      while(itr.hasNext()) {
-//	         OFAction ele = (OFAction) itr.next();
-//	         logger.debug("---------------------- " + ele + " ------------");
-//	      }
-	
-		
+
 		OFMatch newMatch = new OFMatch();
 		OFFlowMod newRule = new OFFlowMod();
 		newRule.setType(OFType.FLOW_MOD);
@@ -502,41 +522,43 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		newActions.add(outOrig);
 		int actionsLength = 0;
 		
-		List<TableEntry> curList = new ArrayList<TableEntry>();
-		curList = swToDest.get(swFlowModified);
-		
-		for (int i = 0; i < curList.size(); i++) {
-			logger.debug("COMing inside for loop----------{}-------------??{}??-------",
-					curList.get(i).ip, curList.get(i).port );
-			OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
-			nwDst.setNetworkAddress(IPv4.toIPv4Address(curList.get(i).ip));
-			OFActionTransportLayerDestination tpDst = new OFActionTransportLayerDestination();
-			tpDst.setTransportPort((short)curList.get(i).port);
-			OFAction outNew = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
-			newActions.add(nwDst);
-			newActions.add(tpDst);
-			newActions.add(outNew);
+		for ( String curSw : modifiedSwitches )
+		{
+			List<TableEntry> curList = new ArrayList<TableEntry>();
+			curList = swToDest.get(curSw);
 			
-			actionsLength += ( OFActionOutput.MINIMUM_LENGTH + 
-					  //OFActionDataLayerSource.MINIMUM_LENGTH + 
-					  //OFActionDataLayerDestination.MINIMUM_LENGTH + 
-					  //OFActionNetworkLayerSource.MINIMUM_LENGTH + 
-					  OFActionNetworkLayerDestination.MINIMUM_LENGTH +
-					  //OFActionTransportLayerSource.MINIMUM_LENGTH + 
-					  OFActionTransportLayerDestination.MINIMUM_LENGTH);
+			for (int i = 0; i < curList.size(); i++) 
+			{
+				logger.debug("Coming inside for loop----------{}-------------??{}??-------",
+						curList.get(i).ip, curList.get(i).port );
+				OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
+				nwDst.setNetworkAddress(IPv4.toIPv4Address(curList.get(i).ip));
+				OFActionTransportLayerDestination tpDst = new OFActionTransportLayerDestination();
+				tpDst.setTransportPort((short)curList.get(i).port);
+				OFAction outNew = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
+				newActions.add(nwDst);
+				newActions.add(tpDst);
+				newActions.add(outNew);
+				
+				actionsLength += ( OFActionOutput.MINIMUM_LENGTH + 
+						  //OFActionDataLayerSource.MINIMUM_LENGTH + 
+						  //OFActionDataLayerDestination.MINIMUM_LENGTH + 
+						  //OFActionNetworkLayerSource.MINIMUM_LENGTH + 
+						  OFActionNetworkLayerDestination.MINIMUM_LENGTH +
+						  //OFActionTransportLayerSource.MINIMUM_LENGTH + 
+						  OFActionTransportLayerDestination.MINIMUM_LENGTH);
+			}
+			
+			newRule.setActions(newActions);
+			newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 	
+			
+
+			staticFlowEntryPusher.addFlow("temp", newRule, curSw);
 		}
 		
-		newRule.setActions(newActions);
-		newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 	
 		
 		
-//		try {
-//				floodlightProvider.getSwitch(ovs21a).write(newRule, null);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}	
 		
-		staticFlowEntryPusher.addFlow("temp", newRule, swFlowModified);
 		
 	}
 	
