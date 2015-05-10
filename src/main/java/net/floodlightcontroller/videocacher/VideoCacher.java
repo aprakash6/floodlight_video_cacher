@@ -461,6 +461,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						modifiedSwitches.add(sw);
 						clientId = Integer.parseInt(var3);
 						TableEntry latestEntry = clientList.get(clientId);
+						
 						if ( swToDest.containsKey(sw) )
 						{
 							logger.debug("----------sw already exists in mapping---------");
@@ -479,6 +480,14 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						}
 						else
 						{
+							for ( String curSw : modifiedSwitches )
+							{
+								for ( TableEntry cur : swToDest.get(curSw) )
+								{
+									logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+								}
+							}
+							
 							logger.debug("----------sw doesnt exist and needs to be added---------");
 //							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList.add(latestEntry);
@@ -519,10 +528,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						        iterator.remove();
 						    }
 						}
-				
-//						logger.debug("?????? this is the entry to be removed = {} and " +
-//								"cur List is empty = {} ???????",entryToBeRemoved.ip, curList.isEmpty());
-//						
+						
 						for ( String curSw : modifiedSwitches )
 						{
 							for ( TableEntry cur : swToDest.get(curSw) )
