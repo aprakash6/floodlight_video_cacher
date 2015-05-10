@@ -463,6 +463,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						if ( swToDest.containsKey(sw) )
 						{
 							logger.debug("----------sw already exists in mapping---------");
+							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList = swToDest.get(sw);
 							curList.add(latestEntry);
 							swToDest.put(sw, curList);
@@ -470,8 +471,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						else
 						{
 							logger.debug("----------sw doesnt exist and needs to be added---------");
+							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList.add(latestEntry);
 							swToDest.put(sw, curList);
+							for ( TableEntry cur : curList)
+							{
+								logger.debug(" cur list item  = {} ",cur.ip);
+							}
 							//logger.debug("----------sw {} is added---------", swToDest.get(sw));
 						}
 						
