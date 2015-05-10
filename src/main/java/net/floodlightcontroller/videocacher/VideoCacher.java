@@ -554,10 +554,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			List<TableEntry> curList = new ArrayList<TableEntry>();
 			curList = swToDest.get(curSw);
 			
+			logger.debug("//// modifiedSw = {} ------ curlist = {} ////////"
+						, curSw, curList.toString());
+				
 			for (int i = 0; i < curList.size(); i++) 
 			{
-				logger.debug("Coming inside for loop----------{}-------------??{}??-------",
-						curList.get(i).ip, curList.get(i).port );
+//				logger.debug("Coming inside for loop----------{}-------------??{}??-------",
+//						curList.get(i).ip, curList.get(i).port );
 				
 				OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
 				nwDst.setNetworkAddress(IPv4.toIPv4Address(curList.get(i).ip));
