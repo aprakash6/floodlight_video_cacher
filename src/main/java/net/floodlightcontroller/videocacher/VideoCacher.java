@@ -522,6 +522,14 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		}
 		
 		logger.debug("?????? modified switches = {} ???????", modifiedSwitches.toString());
+		
+		for ( String curSw : modifiedSwitches )
+		{
+			for ( TableEntry cur : swToDest.get(curSw) )
+			{
+				logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+			}
+		}
 		return modifiedSwitches;
 	}
 	
