@@ -462,14 +462,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						clientId = Integer.parseInt(var3);
 						TableEntry latestEntry = clientList.get(clientId);
 						
-						for ( String curSw : modifiedSwitches )
-						{
-							for ( TableEntry cur : swToDest.get(curSw) )
-							{
-								logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
-							}
-						}
-						
 						if ( swToDest.containsKey(sw) )
 						{
 							logger.debug("----------sw already exists in mapping---------");
