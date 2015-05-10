@@ -483,22 +483,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							
 							
 							logger.debug("----------sw doesnt exist and needs to be added---------");
-//							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList.add(latestEntry);
 							logger.debug("-------latest entry = {}----cursw = {}-----",latestEntry.ip, sw);
 							swToDest.put(sw, curList);
-							for ( String curSw : modifiedSwitches )
-							{
-								for ( TableEntry cur : swToDest.get(curSw) )
-								{
-									logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
-								}
-							}
-//							for ( TableEntry cur : curList)
-//							{
-//								logger.debug(" cur list item  = {}, sw = {} ",cur.ip, sw);
-//							}
-							//logger.debug("----------sw {} is added---------", swToDest.get(sw));
 							
 							for ( String curSw : modifiedSwitches )
 							{
@@ -523,7 +510,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						
 						for (Iterator<TableEntry> iterator = curList.iterator(); iterator.hasNext();) 
 						{
+							logger.debug("----------inside iterator for loop------------");
 						    TableEntry cur = iterator.next();
+						    
 						    if ( cur.equals(entryToBeRemoved) ) 
 						    {
 						        // Remove the current element from the iterator and the list.
@@ -533,6 +522,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						
 						for ( String curSw : modifiedSwitches )
 						{
+							logger.debug("---------- sw = {}------------", curSw);
 							for ( TableEntry cur : swToDest.get(curSw) )
 							{
 								logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
