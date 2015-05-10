@@ -435,7 +435,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			String line;
 			while ((line = br.readLine()) != null) 
 			{
-				logger.debug("??????entered outerWhile ???????");
+				//logger.debug("??????entered outerWhile ???????");
 				
 				if ( line.isEmpty() )
 					continue;
@@ -446,7 +446,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				
 				while ( localCnt == lineCnt  && !line.isEmpty() )
 				{
-					logger.debug("??????entered innerWhile ???????");
+					//logger.debug("??????entered innerWhile ???????");
 					String [] tokens = line.split("\\s+"); //any number of blank spaces
 					String var1 = tokens[0];
 					String var2 = tokens[1];
@@ -472,9 +472,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							
 							for ( String curSw : modifiedSwitches )
 							{
+								logger.debug("---------- sw = {}-------------", curSw);
 								for ( TableEntry cur : swToDest.get(curSw) )
 								{
-									logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+									logger.debug("-------------------------client = {}-------",cur.ip);
 								}
 							}
 						}
@@ -490,9 +491,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							
 							for ( String curSw : modifiedSwitches )
 							{
+								logger.debug("---------- sw = {}-------------", curSw);
 								for ( TableEntry cur : swToDest.get(curSw) )
 								{
-									logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+									logger.debug("-------------------------client = {}-------",cur.ip);
 								}
 							}
 						}
@@ -522,10 +524,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						
 						for ( String curSw : modifiedSwitches )
 						{
-							logger.debug("---------- sw = {}------------", curSw);
+							logger.debug("---------- sw = {}-------------", curSw);
 							for ( TableEntry cur : swToDest.get(curSw) )
 							{
-								logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+								logger.debug("-------------------------client = {}-------",cur.ip);
 							}
 						}
 						
