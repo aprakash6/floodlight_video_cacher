@@ -465,19 +465,19 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						if ( swToDest.containsKey(sw) )
 						{
 							logger.debug("----------sw already exists in mapping---------");
-//							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList = swToDest.get(sw);
 							curList.add(latestEntry);
 							swToDest.put(sw, curList);
 							
-							for ( String curSw : modifiedSwitches )
-							{
-								logger.debug("---------- sw = {}-------------", curSw);
-								for ( TableEntry cur : swToDest.get(curSw) )
-								{
-									logger.debug("-------------------------client = {}-------",cur.ip);
-								}
-							}
+//							logger.debug("<<<<<<<<<Printing the switches and their clients data structure>>>>>>>.");
+//							for ( String curSw : modifiedSwitches )
+//							{
+//								logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
+//								for ( TableEntry cur : swToDest.get(curSw) )
+//								{
+//									logger.debug("-------------------------client = {}-------",cur.ip);
+//								}
+//							}
 						}
 						else
 						{
@@ -489,14 +489,15 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							logger.debug("-------latest entry = {}----cursw = {}-----",latestEntry.ip, sw);
 							swToDest.put(sw, newCurList);
 							
-							for ( String curSw : modifiedSwitches )
-							{
-								logger.debug("---------- sw = {}-------------", curSw);
-								for ( TableEntry cur : swToDest.get(curSw) )
-								{
-									logger.debug("-------------------------client = {}-------",cur.ip);
-								}
-							}
+//							logger.debug("<<<<<<<<<Printing the switches and their clients data structure>>>>>>>.");
+//							for ( String curSw : modifiedSwitches )
+//							{
+//								logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
+//								for ( TableEntry cur : swToDest.get(curSw) )
+//								{
+//									logger.debug("-------------------------client = {}-------",cur.ip);
+//								}
+//							}
 						}
 						
 					}
@@ -522,14 +523,15 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						    }
 						}
 						
-						for ( String curSw : modifiedSwitches )
-						{
-							logger.debug("---------- sw = {}-------------", curSw);
-							for ( TableEntry cur : swToDest.get(curSw) )
-							{
-								logger.debug("-------------------------client = {}-------",cur.ip);
-							}
-						}
+//						logger.debug("<<<<<<<<<Printing the switches and their clients data structure>>>>>>>.");
+//						for ( String curSw : modifiedSwitches )
+//						{
+//							logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
+//							for ( TableEntry cur : swToDest.get(curSw) )
+//							{
+//								logger.debug("-------------------------client = {}-------",cur.ip);
+//							}
+//						}
 						
 					}
 					
@@ -539,7 +541,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						logger.debug("<<<<,line = {} >>>>>>>>",line);
 				}
 				
-				//break;
 			}
 			
 		} 
@@ -550,11 +551,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		logger.debug("?????? modified switches = {} ???????", modifiedSwitches.toString());
 		
+		logger.debug("<<<<<<<<<Printing the switches and their clients data structure>>>>>>>.");
 		for ( String curSw : modifiedSwitches )
 		{
+			logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
 			for ( TableEntry cur : swToDest.get(curSw) )
 			{
-				logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+				logger.debug("-------------------------client = {}-------",cur.ip);
 			}
 		}
 		return modifiedSwitches;
