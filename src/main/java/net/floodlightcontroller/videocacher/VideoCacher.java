@@ -472,7 +472,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							logger.debug("----------sw doesnt exist and needs to be added---------");
 							curList.add(latestEntry);
 							swToDest.put(sw, curList);
-							logger.debug("----------sw {} is added---------", swToDest.get(sw).get(0).ip);
+							//logger.debug("----------sw {} is added---------", swToDest.get(sw));
 						}
 						
 					}
@@ -497,6 +497,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						    }
 						}
 						
+						logger.debug("?????? this is the entry to be removed = {} and " +
+								"cur List is empty = {} ???????",entryToBeRemoved.ip, curList.isEmpty());
+						
 					}
 					
 					if ( ( line = br.readLine() ) == null )
@@ -511,7 +514,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		{
 				e.printStackTrace();
 		}
-
+		
+		logger.debug("?????? modified switches = {} ???????", modifiedSwitches.toString());
 		return modifiedSwitches;
 	}
 	
