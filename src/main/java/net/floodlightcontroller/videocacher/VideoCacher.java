@@ -451,7 +451,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					String var1 = tokens[0];
 					String var2 = tokens[1];
 					String var3 = tokens[2];
-					//sw = var1;
+					
 					
 					if ( var1.equalsIgnoreCase("start") )
 					{
@@ -476,7 +476,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							swToDest.put(sw, curList);
 							for ( TableEntry cur : curList)
 							{
-								logger.debug(" cur list item  = {} ",cur.ip);
+								logger.debug(" cur list item  = {}, sw = {} ",cur.ip, sw);
 							}
 							//logger.debug("----------sw {} is added---------", swToDest.get(sw));
 						}
