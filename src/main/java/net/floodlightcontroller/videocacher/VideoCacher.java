@@ -522,32 +522,35 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	private void addFlowToDuplicateStream(List<String> modifiedSwitches)
 	{
 
-		OFMatch newMatch = new OFMatch();
-		OFFlowMod newRule = new OFFlowMod();
-		newRule.setType(OFType.FLOW_MOD);
-		newRule.setCommand(OFFlowMod.OFPFC_ADD);
-		newRule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
-		newRule.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
-		newRule.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
-		newMatch.setDataLayerType(Ethernet.TYPE_IPv4);
-		newMatch.setNetworkProtocol(IPv4.PROTOCOL_UDP);
-		newMatch.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-		newMatch.setTransportSource((short) 33333);
-		newMatch.setInputPort((short) 1);
-		//set everything to wildcards except nw_proto and dl_type
-		newMatch.setWildcards(~OFMatch.OFPFW_NW_PROTO 
-									& ~OFMatch.OFPFW_DL_TYPE
-									& ~OFMatch.OFPFW_NW_DST_ALL
-									& ~OFMatch.OFPFW_TP_DST);
-		newRule.setMatch(newMatch);
 		
-		ArrayList<OFAction> newActions = new ArrayList<OFAction>();
-		OFAction outOrig = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
-		newActions.add(outOrig);
-		int actionsLength = 0;
 		
 		for ( String curSw : modifiedSwitches )
 		{
+			
+			OFMatch newMatch = new OFMatch();
+			OFFlowMod newRule = new OFFlowMod();
+			newRule.setType(OFType.FLOW_MOD);
+			newRule.setCommand(OFFlowMod.OFPFC_ADD);
+			newRule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+			newRule.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+			newRule.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+			newMatch.setDataLayerType(Ethernet.TYPE_IPv4);
+			newMatch.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+			newMatch.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+			newMatch.setTransportSource((short) 33333);
+			newMatch.setInputPort((short) 1);
+			//set everything to wildcards except nw_proto and dl_type
+			newMatch.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+										& ~OFMatch.OFPFW_DL_TYPE
+										& ~OFMatch.OFPFW_NW_DST_ALL
+										& ~OFMatch.OFPFW_TP_DST);
+			newRule.setMatch(newMatch);
+			
+			ArrayList<OFAction> newActions = new ArrayList<OFAction>();
+			OFAction outOrig = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
+			newActions.add(outOrig);
+			int actionsLength = 0;
+			
 			List<TableEntry> curList = new ArrayList<TableEntry>();
 			curList = swToDest.get(curSw);
 			
@@ -555,6 +558,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			{
 				logger.debug("Coming inside for loop----------{}-------------??{}??-------",
 						curList.get(i).ip, curList.get(i).port );
+				
 				OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
 				nwDst.setNetworkAddress(IPv4.toIPv4Address(curList.get(i).ip));
 				OFActionTransportLayerDestination tpDst = new OFActionTransportLayerDestination();
