@@ -485,6 +485,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							logger.debug("----------sw doesnt exist and needs to be added---------");
 //							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList.add(latestEntry);
+							logger.debug("-------latest entry = {}----cursw = {}-----",latestEntry.ip, sw);
 							swToDest.put(sw, curList);
 							for ( String curSw : modifiedSwitches )
 							{
