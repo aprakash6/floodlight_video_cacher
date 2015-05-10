@@ -441,8 +441,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					continue;
 				
 				localCnt++;
-				logger.debug("??????localcnt = {}, lineCnt = {}, lineEmpty = {} ???????", 
-					Integer.toString(localCnt), Integer.toString(lineCnt) );
+//				logger.debug("??????localcnt = {}, lineCnt = {}, lineEmpty = {} ???????", 
+//					Integer.toString(localCnt), Integer.toString(lineCnt) );
 				
 				while ( localCnt == lineCnt  && !line.isEmpty() )
 				{
@@ -452,6 +452,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					String var2 = tokens[1];
 					String var3 = tokens[2];
 					
+				
 					
 					if ( var1.equalsIgnoreCase("start") )
 					{
@@ -463,22 +464,38 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						if ( swToDest.containsKey(sw) )
 						{
 							logger.debug("----------sw already exists in mapping---------");
-							logger.debug("-------latest entry = {}---------",latestEntry.ip);
+//							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList = swToDest.get(sw);
 							curList.add(latestEntry);
 							swToDest.put(sw, curList);
+							
+							for ( String curSw : modifiedSwitches )
+							{
+								for ( TableEntry cur : swToDest.get(curSw) )
+								{
+									logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+								}
+							}
 						}
 						else
 						{
 							logger.debug("----------sw doesnt exist and needs to be added---------");
-							logger.debug("-------latest entry = {}---------",latestEntry.ip);
+//							logger.debug("-------latest entry = {}---------",latestEntry.ip);
 							curList.add(latestEntry);
 							swToDest.put(sw, curList);
-							for ( TableEntry cur : curList)
-							{
-								logger.debug(" cur list item  = {}, sw = {} ",cur.ip, sw);
-							}
+//							for ( TableEntry cur : curList)
+//							{
+//								logger.debug(" cur list item  = {}, sw = {} ",cur.ip, sw);
+//							}
 							//logger.debug("----------sw {} is added---------", swToDest.get(sw));
+							
+							for ( String curSw : modifiedSwitches )
+							{
+								for ( TableEntry cur : swToDest.get(curSw) )
+								{
+									logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+								}
+							}
 						}
 						
 					}
@@ -502,9 +519,17 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						        iterator.remove();
 						    }
 						}
-						
-						logger.debug("?????? this is the entry to be removed = {} and " +
-								"cur List is empty = {} ???????",entryToBeRemoved.ip, curList.isEmpty());
+				
+//						logger.debug("?????? this is the entry to be removed = {} and " +
+//								"cur List is empty = {} ???????",entryToBeRemoved.ip, curList.isEmpty());
+//						
+						for ( String curSw : modifiedSwitches )
+						{
+							for ( TableEntry cur : swToDest.get(curSw) )
+							{
+								logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
+							}
+						}
 						
 					}
 					
