@@ -480,6 +480,12 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						}
 						else
 						{
+							
+							
+							logger.debug("----------sw doesnt exist and needs to be added---------");
+//							logger.debug("-------latest entry = {}---------",latestEntry.ip);
+							curList.add(latestEntry);
+							swToDest.put(sw, curList);
 							for ( String curSw : modifiedSwitches )
 							{
 								for ( TableEntry cur : swToDest.get(curSw) )
@@ -487,11 +493,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 									logger.debug("---------- sw = {}------client = {}-------", curSw, cur.ip);
 								}
 							}
-							
-							logger.debug("----------sw doesnt exist and needs to be added---------");
-//							logger.debug("-------latest entry = {}---------",latestEntry.ip);
-							curList.add(latestEntry);
-							swToDest.put(sw, curList);
 //							for ( TableEntry cur : curList)
 //							{
 //								logger.debug(" cur list item  = {}, sw = {} ",cur.ip, sw);
