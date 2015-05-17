@@ -396,7 +396,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			List<String> modifiedSwitches = this.updateSwitchesToDestinationMapping();
  			this.addFlowToDuplicateStream(modifiedSwitches);
  		}
- 			
+ 		
+ 		logger.debug("??????  about to add flow rule for the new client on ovs main ???????");
  		OFMatch matchMovieFlowOnSrc = new OFMatch();
 		OFFlowMod ruleMovieFlowOnSrc = new OFFlowMod();
 		ruleMovieFlowOnSrc.setType(OFType.FLOW_MOD);
@@ -411,7 +412,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		matchMovieFlowOnSrc.setTransportSource((short) 33333);
 		matchMovieFlowOnSrc.setTransportDestination(ipPortEntry.port);
 		matchMovieFlowOnSrc.setInputPort(OFPort.OFPP_LOCAL.getValue());
-		//set everything to wildcards except nw_proto and dl_type
+		//set everything to wildcards except nw_proto, dl_type, nw_dst, tp_dst
 		matchMovieFlowOnSrc.setWildcards(~OFMatch.OFPFW_NW_PROTO 
 									& ~OFMatch.OFPFW_DL_TYPE
 									& ~OFMatch.OFPFW_NW_DST_ALL
