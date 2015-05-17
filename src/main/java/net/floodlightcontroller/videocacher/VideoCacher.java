@@ -50,11 +50,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	{
 		public String ip;
 		public short port;
+		public short hardTimeout;
 		
 		public TableEntry()
 		{
 			this.ip = "";
 			this.port = 0;
+			this.hardTimeout = 0;
 		}
 
 		public boolean equals(TableEntry other) 
@@ -395,7 +397,35 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			this.addFlowToDuplicateStream(modifiedSwitches);
  		}
  			
- 			
+ 		OFMatch matchMovieFlowOnSrc = new OFMatch();
+		OFFlowMod ruleMovieFlowOnSrc = new OFFlowMod();
+		ruleMovieFlowOnSrc.setType(OFType.FLOW_MOD);
+		ruleMovieFlowOnSrc.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleMovieFlowOnSrc.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleMovieFlowOnSrc.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleMovieFlowOnSrc.setHardTimeout(ipPortEntry.hardTimeout);
+		matchMovieFlowOnSrc.setDataLayerType(Ethernet.TYPE_IPv4);
+		matchMovieFlowOnSrc.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		matchMovieFlowOnSrc.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+		matchMovieFlowOnSrc.setNetworkDestination(IPv4.toIPv4Address(ipPortEntry.ip));
+		matchMovieFlowOnSrc.setTransportSource((short) 33333);
+		matchMovieFlowOnSrc.setTransportDestination(ipPortEntry.port);
+		matchMovieFlowOnSrc.setInputPort(OFPort.OFPP_LOCAL.getValue());
+		//set everything to wildcards except nw_proto and dl_type
+		matchMovieFlowOnSrc.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+									& ~OFMatch.OFPFW_DL_TYPE
+									& ~OFMatch.OFPFW_NW_DST_ALL
+									& ~OFMatch.OFPFW_TP_DST);
+		ruleMovieFlowOnSrc.setMatch(matchMovieFlowOnSrc);
+		ArrayList<OFAction> movieFlowOnSrcActions = new ArrayList<OFAction>();
+		OFAction outPortMovieFlowOnSrc = new OFActionOutput((short) 1);
+		movieFlowOnSrcActions.add(outPortMovieFlowOnSrc);
+		ruleMovieFlowOnSrc.setActions(movieFlowOnSrcActions);
+		ruleMovieFlowOnSrc.setLengthU(OFFlowMod.MINIMUM_LENGTH
+								+ OFActionOutput.MINIMUM_LENGTH );
+ 		
+		staticFlowEntryPusher.addFlow("MovieOnSrc", ruleMovieFlowOnSrc, floodlightProvider.getSwitch(ovsMain).getStringId() );
+
  		try {
  			sw.write(rule, null);
  		} catch (Exception e) {
@@ -429,6 +459,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		String sw = null;
 		Integer clientId = 0;
+		Short timeout = 0;
 		
 		try 
 		{
@@ -451,6 +482,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					String var1 = tokens[0];
 					String var2 = tokens[1];
 					String var3 = tokens[2];
+					String var4 = tokens[3];
 					
 				
 					
@@ -460,7 +492,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						sw = var2;
 						modifiedSwitches.add(sw);
 						clientId = Integer.parseInt(var3);
+						timeout = Short.parseShort(var4);
 						TableEntry latestEntry = clientList.get(clientId);
+						latestEntry.hardTimeout = timeout;
 						
 						if ( swToDest.containsKey(sw) )
 						{
@@ -852,7 +886,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 								+ OFActionOutput.MINIMUM_LENGTH );
 				
 		//Added the rule for the main OVS on the source as well
-		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
+		//staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
 		
 		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
 		staticFlowEntryPusher.addFlow("MovieLower", ruleMovieLower, floodlightProvider.getSwitch(ovs21b).getStringId() );
