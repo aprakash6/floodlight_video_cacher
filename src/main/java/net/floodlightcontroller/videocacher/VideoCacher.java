@@ -396,6 +396,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			List<String> modifiedSwitches = this.updateSwitchesToDestinationMapping();
  			this.addFlowToDuplicateStream(modifiedSwitches);
  		}
+ 		Integer newTpSrcInt = 40000 + flowCount;
+ 		Short newTpSrc = newTpSrcInt.shortValue();
  		
  		logger.debug("??????  about to add flow rule for the new client on ovs main ???????");
  		OFMatch matchMovieFlowOnSrc = new OFMatch();
@@ -409,7 +411,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		matchMovieFlowOnSrc.setNetworkProtocol(IPv4.PROTOCOL_UDP);
 		matchMovieFlowOnSrc.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
 		matchMovieFlowOnSrc.setNetworkDestination(IPv4.toIPv4Address(ipPortEntry.ip));
-		matchMovieFlowOnSrc.setTransportSource((short) 33333);
+		matchMovieFlowOnSrc.setTransportSource(newTpSrc);
 		matchMovieFlowOnSrc.setTransportDestination(ipPortEntry.port);
 		matchMovieFlowOnSrc.setInputPort(OFPort.OFPP_LOCAL.getValue());
 		//set everything to wildcards except nw_proto, dl_type, nw_dst, tp_dst
@@ -831,7 +833,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		matchMovieHigher.setDataLayerType(Ethernet.TYPE_IPv4);
 		matchMovieHigher.setNetworkProtocol(IPv4.PROTOCOL_UDP);
 		matchMovieHigher.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-		matchMovieHigher.setTransportSource((short) 33333);
+		//matchMovieHigher.setTransportSource((short) 33333);
 		matchMovieHigher.setInputPort((short) 1);
 		//set everything to wildcards except nw_proto and dl_type
 		matchMovieHigher.setWildcards(~OFMatch.OFPFW_NW_PROTO 
@@ -871,7 +873,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		matchMovieLower.setDataLayerType(Ethernet.TYPE_IPv4);
 		matchMovieLower.setNetworkProtocol(IPv4.PROTOCOL_UDP);
 		matchMovieLower.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-		matchMovieLower.setTransportSource((short) 33333);
+		//matchMovieLower.setTransportSource((short) 33333);
 		matchMovieLower.setInputPort(OFPort.OFPP_LOCAL.getValue());
 		//set everything to wildcards except nw_proto and dl_type
 		matchMovieLower.setWildcards(~OFMatch.OFPFW_NW_PROTO 
