@@ -406,6 +406,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleMovieFlowOnSrc.setCommand(OFFlowMod.OFPFC_ADD);
 		ruleMovieFlowOnSrc.setBufferId(OFPacketOut.BUFFER_ID_NONE);
 		ruleMovieFlowOnSrc.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		logger.debug("??????  HARD_TIMEOUT = {}      ???????",ipPortEntry.hardTimeout );
 		ruleMovieFlowOnSrc.setHardTimeout(ipPortEntry.hardTimeout);
 		matchMovieFlowOnSrc.setDataLayerType(Ethernet.TYPE_IPv4);
 		matchMovieFlowOnSrc.setNetworkProtocol(IPv4.PROTOCOL_UDP);
