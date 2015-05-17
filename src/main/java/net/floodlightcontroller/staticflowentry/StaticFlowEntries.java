@@ -97,7 +97,7 @@ public class StaticFlowEntries {
      */
     public static void initDefaultFlowMod(OFFlowMod fm, String entryName) {
         fm.setIdleTimeout((short) 0);   // infinite
-        //fm.setHardTimeout((short) 0);   // infinite
+        fm.setHardTimeout((short) 0);   // infinite
         fm.setBufferId(OFPacketOut.BUFFER_ID_NONE);
         fm.setCommand((short) 0);
         fm.setFlags((short) 0);

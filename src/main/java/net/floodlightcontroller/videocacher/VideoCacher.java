@@ -428,10 +428,12 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleMovieFlowOnSrc.setLengthU(OFFlowMod.MINIMUM_LENGTH
 								+ OFActionOutput.MINIMUM_LENGTH );
  		
-		String flowName = "MovieOnSrc" + flowCount.toString(); 
-		staticFlowEntryPusher.addFlow(flowName, ruleMovieFlowOnSrc, floodlightProvider.getSwitch(ovsMain).getStringId() );
+//		String flowName = "MovieOnSrc" + flowCount.toString(); 
+//		staticFlowEntryPusher.addFlow(flowName, ruleMovieFlowOnSrc, floodlightProvider.getSwitch(ovsMain).getStringId() );
 
+		
  		try {
+ 			floodlightProvider.getSwitch(ovsMain).write(ruleMovieFlowOnSrc, null);
  			sw.write(rule, null);
  		} catch (Exception e) {
  			e.printStackTrace();
