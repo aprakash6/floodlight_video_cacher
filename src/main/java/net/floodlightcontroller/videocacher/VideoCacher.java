@@ -968,7 +968,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 									+ OFActionOutput.MINIMUM_LENGTH );
 						
 		//Added the rule for the main OVS on the source as well
-		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
+		//staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovsMain).getStringId() );
 						
 		
 		staticFlowEntryPusher.addFlow("BacklogLower", ruleBacklogLower, floodlightProvider.getSwitch(ovs11b).getStringId() );
