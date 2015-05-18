@@ -1008,10 +1008,11 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 											& ~OFMatch.OFPFW_NW_DST_ALL
 											& ~OFMatch.OFPFW_TP_DST);
 				ruleDropMovie.setMatch(matchDropMovie);
-				ArrayList<OFAction> dropMovie = new ArrayList<OFAction>();
-				OFAction outDropMovie = new OFActionOutput();
-				dropMovie.add(outDropMovie);
-				ruleDropMovie.setActions(dropMovie);
+//				ArrayList<OFAction> dropMovie = new ArrayList<OFAction>();
+//				OFAction outDropMovie = new OFActionOutput();
+//				dropMovie.add(outDropMovie);
+				List<OFAction> outDropActions = new ArrayList<OFAction>(); // Set no action to drop
+				ruleDropMovie.setActions(outDropActions);
 				ruleDropMovie.setLengthU(OFFlowMod.MINIMUM_LENGTH
 										+ OFActionOutput.MINIMUM_LENGTH );
 						
