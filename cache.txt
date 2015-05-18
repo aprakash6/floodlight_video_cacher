@@ -1,4 +1,6 @@
-Start 00:00:00:00:00:00:21:01 2 10
+Start 0 helps 0 at NONE srctap 1 on for 0
+
+Start 1 helps 2 at 00:00:00:00:00:00:21:01 srctap 2 on for 10
 
 Start 00:00:00:00:00:00:21:01 3 20
 

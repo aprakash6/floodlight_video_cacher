@@ -391,15 +391,33 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  		/*----------Add a duplication rule at a particular switch before allowing the movie request
  	 	to go through---------------------------------------------------------------------------*/
  			
- 		if (flowCount > 1)
- 		{	
- 			List<String> modifiedSwitches = this.updateSwitchesToDestinationMapping();
- 			this.addFlowToDuplicateStream(modifiedSwitches);
- 		}
- 		Integer newTpSrcInt = 40000 + flowCount;
+ 		List<String> modifiedSwitches = this.updateSwitchesToDestinationMapping();
+ 		this.addFlowToDuplicateStream(modifiedSwitches);
+ 		
+ 
+		
+ 		try {
+ 			sw.write(rule, null);
+ 		} catch (Exception e) {
+ 			e.printStackTrace();
+ 		}	
+ 			
+ 		this.pushPacket(sw, match2, pi, outPort);
+ 			
+		
+		
+	
+		return Command.CONTINUE;
+	}
+	
+	
+	private void handleSrcTapEvents( Integer clientId, TableEntry ipPortEntry )
+	{
+		
+		Integer newTpSrcInt = 40000 + clientId;
  		Short newTpSrc = newTpSrcInt.shortValue();
  		
- 		logger.debug("??????  about to add flow rule for the new client on ovs main ???????");
+ 		logger.debug("??????  about to turn on SRCTAP for the client on ovs main ???????");
  		OFMatch matchMovieFlowOnSrc = new OFMatch();
 		OFFlowMod ruleMovieFlowOnSrc = new OFFlowMod();
 		ruleMovieFlowOnSrc.setType(OFType.FLOW_MOD);
@@ -427,24 +445,14 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		ruleMovieFlowOnSrc.setActions(movieFlowOnSrcActions);
 		ruleMovieFlowOnSrc.setLengthU(OFFlowMod.MINIMUM_LENGTH
 								+ OFActionOutput.MINIMUM_LENGTH );
- 		
-//		String flowName = "MovieOnSrc" + flowCount.toString(); 
-//		staticFlowEntryPusher.addFlow(flowName, ruleMovieFlowOnSrc, floodlightProvider.getSwitch(ovsMain).getStringId() );
 
 		
  		try {
  			floodlightProvider.getSwitch(ovsMain).write(ruleMovieFlowOnSrc, null);
- 			sw.write(rule, null);
  		} catch (Exception e) {
  			e.printStackTrace();
  		}	
- 			
- 		this.pushPacket(sw, match2, pi, outPort);
- 			
 		
-		
-	
-		return Command.CONTINUE;
 	}
 	
 	private List<String> updateSwitchesToDestinationMapping()
@@ -465,7 +473,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		BufferedReader br = new BufferedReader(fr);
 		
 		String sw = null;
-		Integer clientId = 0;
+		Integer clientIdFrom = 0;
+		Integer clientIdTo = 0;
 		Short timeout = 0;
 		
 		try 
@@ -490,6 +499,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					String var2 = tokens[1];
 					String var3 = tokens[2];
 					String var4 = tokens[3];
+					String var5 = tokens[4];
+					String var6 = tokens[5];
+					String var7 = tokens[6];
+					String var8 = tokens[7];
+					String var9 = tokens[8];
+					String var10 = tokens[9];
+					String var11 = tokens[10];
 					
 				
 					
@@ -498,9 +514,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						logger.debug("??????IN THE START CASE???????");
 						sw = var2;
 						modifiedSwitches.add(sw);
-						clientId = Integer.parseInt(var3);
+						clientIdTo = Integer.parseInt(var3);
 						timeout = Short.parseShort(var4);
-						TableEntry latestEntry = clientList.get(clientId);
+						TableEntry latestEntry = clientList.get(clientIdTo);
 						latestEntry.hardTimeout = timeout;
 						
 						if ( swToDest.containsKey(sw) )
@@ -548,9 +564,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						logger.debug("??????IN THE STOP CASE???????");
 						sw = var2;
 						modifiedSwitches.add(sw);
-						clientId = Integer.parseInt(var3);
+						clientIdTo = Integer.parseInt(var3);
 						
-						TableEntry entryToBeRemoved = clientList.get(clientId);
+						TableEntry entryToBeRemoved = clientList.get(clientIdTo);
 						curList = swToDest.get(sw);
 						
 						for (Iterator<TableEntry> iterator = curList.iterator(); iterator.hasNext();) 
