@@ -2,6 +2,8 @@ Start 0 helps 0 at NONE srctap 1 on for 0
 
 Start 1 helps 2 at 00:00:00:00:00:00:21:01 srctap 2 on for 10
 
+Start 2 helps 3 at 00:00:00:00:00:00:21:01 srctap 0 on for 0
+
 Start 00:00:00:00:00:00:21:01 3 20
 
 Start 00:00:00:00:00:00:11:01 4 30

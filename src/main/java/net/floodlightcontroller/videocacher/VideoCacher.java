@@ -52,11 +52,14 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		public short port;
 		public short hardTimeout;
 		
+		public Integer clientIdToBeDuplicated;
+		
 		public TableEntry()
 		{
 			this.ip = "";
 			this.port = 0;
 			this.hardTimeout = 0;
+			this.clientIdToBeDuplicated = 0;
 		}
 
 		public boolean equals(TableEntry other) 
@@ -474,8 +477,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		BufferedReader br = new BufferedReader(fr);
 		
 		String sw = null;
-		Integer clientIdFrom = 0;
-		Integer clientIdTo = 0;
+		Integer clientIdToBeDuplicated = 0;
+		Integer clientId = 0;
 		Short timeout = 0;
 		
 		try 
@@ -510,15 +513,15 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					
 				
 					
-					if ( var1.equalsIgnoreCase("start") )
+					if ( var1.equalsIgnoreCase("start") && !var2.equalsIgnoreCase("0") )
 					{
 						logger.debug("??????IN THE START CASE???????");
-						sw = var2;
+						sw = var6;
 						modifiedSwitches.add(sw);
-						clientIdTo = Integer.parseInt(var3);
-						timeout = Short.parseShort(var4);
-						TableEntry latestEntry = clientList.get(clientIdTo);
-						latestEntry.hardTimeout = timeout;
+						clientIdToBeDuplicated = Integer.parseInt(var2);
+						clientId = Integer.parseInt(var4);
+						TableEntry latestEntry = clientList.get(clientId);
+						latestEntry.clientIdToBeDuplicated = clientIdToBeDuplicated;
 						
 						if ( swToDest.containsKey(sw) )
 						{
@@ -527,47 +530,28 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							curList.add(latestEntry);
 							swToDest.put(sw, curList);
 							
-//							logger.debug("<<<<<<<<<Printing the switches and their clients data structure>>>>>>>.");
-//							for ( String curSw : modifiedSwitches )
-//							{
-//								logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
-//								for ( TableEntry cur : swToDest.get(curSw) )
-//								{
-//									logger.debug("-------------------------client = {}-------",cur.ip);
-//								}
-//							}
 						}
+						
 						else
 						{
-							
-							
 							logger.debug("----------sw doesnt exist and needs to be added---------");
 							List<TableEntry> newCurList = new ArrayList<TableEntry>();
 							newCurList.add(latestEntry);
 							logger.debug("-------latest entry = {}----cursw = {}-----",latestEntry.ip, sw);
 							swToDest.put(sw, newCurList);
-							
-//							logger.debug("<<<<<<<<<Printing the switches and their clients data structure>>>>>>>.");
-//							for ( String curSw : modifiedSwitches )
-//							{
-//								logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
-//								for ( TableEntry cur : swToDest.get(curSw) )
-//								{
-//									logger.debug("-------------------------client = {}-------",cur.ip);
-//								}
-//							}
 						}
 						
-					}
+					}//end of start case
+					
 					
 					if ( var1.equalsIgnoreCase("stop") )
 					{
 						logger.debug("??????IN THE STOP CASE???????");
 						sw = var2;
 						modifiedSwitches.add(sw);
-						clientIdTo = Integer.parseInt(var3);
+						clientId = Integer.parseInt(var3);
 						
-						TableEntry entryToBeRemoved = clientList.get(clientIdTo);
+						TableEntry entryToBeRemoved = clientList.get(clientId);
 						curList = swToDest.get(sw);
 						
 						for (Iterator<TableEntry> iterator = curList.iterator(); iterator.hasNext();) 
@@ -581,17 +565,19 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						    }
 						}
 						
-//						logger.debug("<<<<<<<<<Printing the switches and their clients data structure>>>>>>>.");
-//						for ( String curSw : modifiedSwitches )
-//						{
-//							logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
-//							for ( TableEntry cur : swToDest.get(curSw) )
-//							{
-//								logger.debug("-------------------------client = {}-------",cur.ip);
-//							}
-//						}
-						
-					}
+					
+					}// end of stop case
+					
+					
+					if ( var7.equalsIgnoreCase("srctap")  &&  !var8.equalsIgnoreCase("0") )
+					{
+						Integer clientToBeTurnedOn = Integer.parseInt(var8);
+						timeout = Short.parseShort(var11);
+						TableEntry curEntry = clientList.get(clientToBeTurnedOn);
+						curEntry.hardTimeout = timeout;
+						this.handleSrcTapEvents(clientToBeTurnedOn, curEntry);
+					}// end of src tap case
+					
 					
 					if ( ( line = br.readLine() ) == null )
 						break;
