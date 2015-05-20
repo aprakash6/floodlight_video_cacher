@@ -53,6 +53,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		public short hardTimeout;
 		
 		public Integer clientIdToBeDuplicated;
+		public Integer toBeRemoved;
 		
 		public TableEntry()
 		{
@@ -481,6 +482,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		String sw = null;
 		Integer clientIdToBeDuplicated = 0;
+		Integer clientIdToBeStopped = 0;
 		Integer clientId = 0;
 		Short timeout = 0;
 		
@@ -550,9 +552,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					if ( var1.equalsIgnoreCase("stop") )
 					{
 						logger.debug("??????IN THE STOP CASE???????");
-						sw = var2;
+						sw = var6;
 						modifiedSwitches.add(sw);
-						clientId = Integer.parseInt(var3);
+						clientIdToBeStopped = Integer.parseInt(var2);
+						clientId = Integer.parseInt(var4);
 						
 						TableEntry entryToBeRemoved = clientList.get(clientId);
 						curList = swToDest.get(sw);
@@ -564,7 +567,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						    
 						    if ( cur.equals(entryToBeRemoved) ) 
 						    {
-						        iterator.remove();
+//						        iterator.remove();
+						    	cur.toBeRemoved = 1;
 						    }
 						}
 						
@@ -625,8 +629,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				if( streamToClientsMap.containsKey(curList.get(i).clientIdToBeDuplicated) )
 				{
 					ArrayList<TableEntry> clients = streamToClientsMap.get(curList.get(i).clientIdToBeDuplicated);
+					
 					if ( ! clients.contains(curList.get(i)) )
 						clients.add(curList.get(i));
+					
+					if ( curList.get(i).toBeRemoved == 1 )
+						clients.remove(curList.get(i));
+					
 				}
 				else
 				{
@@ -639,7 +648,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			
 			for (Map.Entry<Integer, ArrayList<TableEntry>> entry : streamToClientsMap.entrySet())
 			{		
-				logger.debug(":::::::: Printing srcToClientMap data structure ::::::::::");
+				logger.debug(":::::::: Printing streamToClientMap data structure ::::::::::");
 				logger.debug("key = {}  and ",entry.getKey());
 				for (int i = 0; i < entry.getValue().size(); i++) 
 				{
