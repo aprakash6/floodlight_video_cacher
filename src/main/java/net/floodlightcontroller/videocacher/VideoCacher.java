@@ -82,7 +82,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	protected Map<Integer, TableEntry> clientList;
 	protected Map<String, List<TableEntry>> swToDest;
 	
-	protected Map<Integer, ArrayList<TableEntry>>  srcToClientsMap;
+	protected Map<Integer, ArrayList<TableEntry>>  streamToClientsMap;
 	
 	protected Map<Integer, OFFlowMod> ruleTable;
 	protected Integer flowCount;
@@ -182,7 +182,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	    flowCount = 0;
 	    swToDest = new HashMap <String, List<TableEntry>>();
 	    clientList = new HashMap <Integer, TableEntry>();
-	    srcToClientsMap = new HashMap<Integer, ArrayList<TableEntry>>();
+	    streamToClientsMap = new HashMap<Integer, ArrayList<TableEntry>>();
 		
 	}
 
@@ -604,7 +604,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
 			for ( TableEntry cur : swToDest.get(curSw) )
 			{
-				logger.debug("-------------------------client = {}----{}---",cur.ip, cur.port);
+				logger.debug("---------------client = {}----{}----{}-",cur.ip,cur.port);
 			}
 		}
 		return modifiedSwitches;
@@ -622,26 +622,37 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			
 			for (int i = 0; i < curList.size(); i++) 
 			{
-				if( srcToClientsMap.containsKey(curList.get(i).clientIdToBeDuplicated) )
+				if( streamToClientsMap.containsKey(curList.get(i).clientIdToBeDuplicated) )
 				{
-					logger.debug(" ::::::::: key = {} and value = {} :::::::::",
-							curList.get(i).clientIdToBeDuplicated,
-							srcToClientsMap.get(curList.get(i).clientIdToBeDuplicated));
+//					logger.debug(" ::::::::: key = {} and value = {} :::::::::",
+//							curList.get(i).clientIdToBeDuplicated,
+//							srcToClientsMap.get(curList.get(i).clientIdToBeDuplicated));
 					
-					ArrayList<TableEntry> clients = srcToClientsMap.get(curList.get(i).clientIdToBeDuplicated);
+					ArrayList<TableEntry> clients = streamToClientsMap.get(curList.get(i).clientIdToBeDuplicated);
 					clients.add(curList.get(i));
 				}
 				else
 				{
 					ArrayList<TableEntry> clients = new ArrayList<TableEntry>();
 					clients.add(curList.get(i));
-					srcToClientsMap.put(curList.get(i).clientIdToBeDuplicated, clients);
+					streamToClientsMap.put(curList.get(i).clientIdToBeDuplicated, clients);
 				}
 				
 			}
+			
+			for (Map.Entry<Integer, ArrayList<TableEntry>> entry : streamToClientsMap.entrySet())
+			{		
+				logger.debug(":::::::: Printing srcToClientMap data structure ::::::::::");
+				logger.debug("key = {}  and ",entry.getKey());
+				for (int i = 0; i < entry.getValue().size(); i++) 
+				{
+					logger.debug("             value = {} ", entry.getValue().get(i).ip, 
+							entry.getValue().get(i).port);
+				}
+			}
 				
 			
-			for (Map.Entry<Integer, ArrayList<TableEntry>> entry : srcToClientsMap.entrySet())
+			for (Map.Entry<Integer, ArrayList<TableEntry>> entry : streamToClientsMap.entrySet())
 			{
 				Integer tpPortInt = 40000 + entry.getKey();
 				Short tpPortShort = tpPortInt.shortValue();
