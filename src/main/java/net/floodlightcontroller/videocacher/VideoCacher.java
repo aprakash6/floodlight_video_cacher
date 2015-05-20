@@ -646,7 +646,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				logger.debug("key = {}  and ",entry.getKey());
 				for (int i = 0; i < entry.getValue().size(); i++) 
 				{
-					logger.debug("             value = {} ", entry.getValue().get(i).ip, 
+					logger.debug("             value = {}, {} ", entry.getValue().get(i).ip, 
 							entry.getValue().get(i).port);
 				}
 			}
