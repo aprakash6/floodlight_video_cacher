@@ -82,6 +82,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	protected Map<Integer, TableEntry> clientList;
 	protected Map<String, List<TableEntry>> swToDest;
 	
+	protected Map<Integer, ArrayList<TableEntry>>  srcToClientsMap;
+	
 	protected Map<Integer, OFFlowMod> ruleTable;
 	protected Integer flowCount;
 	
@@ -180,6 +182,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	    flowCount = 0;
 	    swToDest = new HashMap <String, List<TableEntry>>();
 	    clientList = new HashMap <Integer, TableEntry>();
+	    srcToClientsMap = new HashMap<Integer, ArrayList<TableEntry>>();
 		
 	}
 
@@ -616,8 +619,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		{
 			List<TableEntry> curList = new ArrayList<TableEntry>();
 			curList = swToDest.get(curSw);
-			
-			Map<Integer, ArrayList<TableEntry>> srcToClientsMap = new HashMap<Integer, ArrayList<TableEntry>>(); 
 			
 			for (int i = 0; i < curList.size(); i++) 
 			{
