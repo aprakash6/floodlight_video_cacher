@@ -568,7 +568,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						    
 						    if ( cur.equals(entryToBeRemoved) ) 
 						    {
-//						        iterator.remove();
+						        //iterator.remove();
 						    	cur.toBeRemoved = 1;
 						    }
 						}
@@ -609,7 +609,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			logger.debug("<<<<<<<< sw = {} >>>>>>>>>>>>>>>", curSw);
 			for ( TableEntry cur : swToDest.get(curSw) )
 			{
-				logger.debug("---------------client = {}----{}----{}-",cur.ip,cur.port);
+				logger.debug("---------------client = -----" + cur.ip + 
+						" -----  " + String.valueOf(cur.port) +
+						" -----  " + cur.toBeRemoved); 
 			}
 		}
 		return modifiedSwitches;
@@ -624,7 +626,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		{
 			List<TableEntry> curList = new ArrayList<TableEntry>();
 			curList = swToDest.get(curSw);
-			
+				
 			for (int i = 0; i < curList.size(); i++) 
 			{
 				if( streamToClientsMap.containsKey(curList.get(i).clientIdToBeDuplicated) )
@@ -653,9 +655,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				logger.debug("key = {}  and ",entry.getKey());
 				for (int i = 0; i < entry.getValue().size(); i++) 
 				{
-					logger.debug("             value = {}, {} ", entry.getValue().get(i).ip, 
-							 
-							entry.getValue().get(i).port);
+					logger.debug("             value = " + entry.getValue().get(i).ip +
+							"    " + String.valueOf(entry.getValue().get(i).port) + 
+							"  toberemoved = " +  entry.getValue().get(i).toBeRemoved);
+					
 				}
 			}
 				
