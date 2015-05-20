@@ -614,67 +614,90 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		for ( String curSw : modifiedSwitches )
 		{
-			
-			OFMatch newMatch = new OFMatch();
-			OFFlowMod newRule = new OFFlowMod();
-			newRule.setType(OFType.FLOW_MOD);
-			newRule.setCommand(OFFlowMod.OFPFC_ADD);
-			newRule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
-			newRule.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
-			newRule.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
-			newMatch.setDataLayerType(Ethernet.TYPE_IPv4);
-			newMatch.setNetworkProtocol(IPv4.PROTOCOL_UDP);
-			newMatch.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-			newMatch.setTransportSource((short) 33333);
-			newMatch.setInputPort((short) 1);
-			//set everything to wildcards except nw_proto and dl_type
-			newMatch.setWildcards(~OFMatch.OFPFW_NW_PROTO 
-										& ~OFMatch.OFPFW_DL_TYPE
-										& ~OFMatch.OFPFW_NW_DST_ALL
-										& ~OFMatch.OFPFW_TP_DST);
-			newRule.setMatch(newMatch);
-			
-			ArrayList<OFAction> newActions = new ArrayList<OFAction>();
-			OFAction outOrig = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
-			newActions.add(outOrig);
-			int actionsLength = 0;
-			
 			List<TableEntry> curList = new ArrayList<TableEntry>();
 			curList = swToDest.get(curSw);
 			
+			Map<Integer, ArrayList<TableEntry>> srcToClientsMap = new HashMap<Integer, ArrayList<TableEntry>>(); 
 			
-				
 			for (int i = 0; i < curList.size(); i++) 
 			{
-//				logger.debug("Coming inside for loop----------{}-------------??{}??-------",
-//						curList.get(i).ip, curList.get(i).port );
+				if( srcToClientsMap.containsKey(curList.get(i).clientIdToBeDuplicated) )
+				{
+					ArrayList<TableEntry> clients = srcToClientsMap.get(curList.get(i).clientIdToBeDuplicated);
+					clients.add(curList.get(i));
+				}
+				else
+				{
+					ArrayList<TableEntry> clients = new ArrayList<TableEntry>();
+					clients.add(curList.get(i));
+					srcToClientsMap.put(curList.get(i).clientIdToBeDuplicated, clients);
+				}
 				
-				logger.debug("//// modifiedSw = {} ------ curlist = {} ////////"
-						, curSw, curList.get(i).ip);
+			}
 				
-				OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
-				nwDst.setNetworkAddress(IPv4.toIPv4Address(curList.get(i).ip));
-				OFActionTransportLayerDestination tpDst = new OFActionTransportLayerDestination();
-				tpDst.setTransportPort((short)curList.get(i).port);
-				OFAction outNew = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
-				newActions.add(nwDst);
-				newActions.add(tpDst);
-				newActions.add(outNew);
+			
+			for (Map.Entry<Integer, ArrayList<TableEntry>> entry : srcToClientsMap.entrySet())
+			{
+				Integer tpPortInt = 40000 + entry.getKey();
+				Short tpPortShort = tpPortInt.shortValue();
+						
+				OFMatch newMatch = new OFMatch();
+				OFFlowMod newRule = new OFFlowMod();
+				newRule.setType(OFType.FLOW_MOD);
+				newRule.setCommand(OFFlowMod.OFPFC_ADD);
+				newRule.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+				newRule.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+				newRule.setHardTimeout(FLOWMOD_DEFAULT_HARD_TIMEOUT);
+				newMatch.setDataLayerType(Ethernet.TYPE_IPv4);
+				newMatch.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+				newMatch.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+				newMatch.setTransportSource((short) tpPortShort);
+				newMatch.setInputPort((short) 1);
+				//set everything to wildcards except nw_proto and dl_type
+				newMatch.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+											& ~OFMatch.OFPFW_DL_TYPE
+											& ~OFMatch.OFPFW_NW_DST_ALL
+											& ~OFMatch.OFPFW_TP_DST);
+				newRule.setMatch(newMatch);
 				
-				actionsLength += ( OFActionOutput.MINIMUM_LENGTH + 
-						  //OFActionDataLayerSource.MINIMUM_LENGTH + 
-						  //OFActionDataLayerDestination.MINIMUM_LENGTH + 
-						  //OFActionNetworkLayerSource.MINIMUM_LENGTH + 
-						  OFActionNetworkLayerDestination.MINIMUM_LENGTH +
-						  //OFActionTransportLayerSource.MINIMUM_LENGTH + 
-						  OFActionTransportLayerDestination.MINIMUM_LENGTH);
+				ArrayList<OFAction> newActions = new ArrayList<OFAction>();
+				OFAction outOrig = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
+				newActions.add(outOrig);
+				int actionsLength = 0;
+				
+				for (int i = 0; i < entry.getValue().size(); i++) 
+				{
+					logger.debug("//// modifiedSw = {} ------ curlist = {} ////////"
+							, curSw, entry.getValue().get(i).ip);
+					
+					
+					OFActionNetworkLayerDestination nwDst = new OFActionNetworkLayerDestination();
+					nwDst.setNetworkAddress(IPv4.toIPv4Address(entry.getValue().get(i).ip));
+					OFActionTransportLayerDestination tpDst = new OFActionTransportLayerDestination();
+					tpDst.setTransportPort((short)entry.getValue().get(i).port);
+					OFAction outNew = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
+					newActions.add(nwDst);
+					newActions.add(tpDst);
+					newActions.add(outNew);
+					
+					actionsLength += ( OFActionOutput.MINIMUM_LENGTH + 
+							  //OFActionDataLayerSource.MINIMUM_LENGTH + 
+							  //OFActionDataLayerDestination.MINIMUM_LENGTH + 
+							  //OFActionNetworkLayerSource.MINIMUM_LENGTH + 
+							  OFActionNetworkLayerDestination.MINIMUM_LENGTH +
+							  //OFActionTransportLayerSource.MINIMUM_LENGTH + 
+							  OFActionTransportLayerDestination.MINIMUM_LENGTH);
+				}
+				
+				newRule.setActions(newActions);
+				newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 	
+				
+
+				staticFlowEntryPusher.addFlow("temp", newRule, curSw);
+				
 			}
 			
-			newRule.setActions(newActions);
-			newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 	
 			
-
-			staticFlowEntryPusher.addFlow("temp", newRule, curSw);
 		}
 		
 		
