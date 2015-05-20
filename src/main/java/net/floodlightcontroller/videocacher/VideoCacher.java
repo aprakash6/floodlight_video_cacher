@@ -84,7 +84,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	protected Map<Integer, TableEntry> clientList;
 	protected Map<String, List<TableEntry>> swToDest;
 	
-	protected Map<Integer, ArrayList<TableEntry>>  streamToClientsMap;
+	protected Map<Integer, List<TableEntry>>  streamToClientsMap;
 	
 	protected Map<Integer, OFFlowMod> ruleTable;
 	protected Integer flowCount;
@@ -184,7 +184,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	    flowCount = 0;
 	    swToDest = new HashMap <String, List<TableEntry>>();
 	    clientList = new HashMap <Integer, TableEntry>();
-	    streamToClientsMap = new HashMap<Integer, ArrayList<TableEntry>>();
+	    streamToClientsMap = new HashMap<Integer, List<TableEntry>>();
 		
 	}
 
@@ -523,7 +523,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					{
 						logger.debug("??????IN THE START CASE???????");
 						sw = var6;
-						modifiedSwitches.add(sw);
+						if ( ! modifiedSwitches.contains(sw)  )
+							modifiedSwitches.add(sw);
 						clientIdToBeDuplicated = Integer.parseInt(var2);
 						clientId = Integer.parseInt(var4);
 						TableEntry latestEntry = clientList.get(clientId);
@@ -554,7 +555,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					{
 						logger.debug("??????IN THE STOP CASE???????");
 						sw = var6;
-						modifiedSwitches.add(sw);
+						if ( ! modifiedSwitches.contains(sw)  )
+							modifiedSwitches.add(sw);
+						
 						clientIdToBeStopped = Integer.parseInt(var2);
 						clientId = Integer.parseInt(var4);
 						
@@ -568,8 +571,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						    
 						    if ( cur.equals(entryToBeRemoved) ) 
 						    {
-						        //iterator.remove();
-						    	cur.toBeRemoved = 1;
+						        iterator.remove();
+						    	this.removeStreamTolientsStructure(entryToBeRemoved.clientIdToBeDuplicated,
+						    			entryToBeRemoved);
 						    }
 						}
 						
@@ -617,6 +621,20 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		return modifiedSwitches;
 	}
 	
+	private void removeStreamTolientsStructure(Integer key, TableEntry entry)
+	{
+		List<TableEntry> dupList = streamToClientsMap.get(key);
+		
+		for (Iterator<TableEntry> iterator = dupList.iterator(); iterator.hasNext();) 
+		{
+			TableEntry cur = iterator.next();
+		    if ( cur.equals(entry) ) 
+		    {
+		        iterator.remove();
+		    }
+		}
+	}
+	
 	private void addFlowToDuplicateStream(List<String> modifiedSwitches)
 	{
 
@@ -631,13 +649,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			{
 				if( streamToClientsMap.containsKey(curList.get(i).clientIdToBeDuplicated) )
 				{
-					ArrayList<TableEntry> clients = streamToClientsMap.get(curList.get(i).clientIdToBeDuplicated);
+					List<TableEntry> clients = streamToClientsMap.get(curList.get(i).clientIdToBeDuplicated);
 					
 					if ( ! clients.contains(curList.get(i)) )
 						clients.add(curList.get(i));
-					
-					if ( curList.get(i).toBeRemoved == 1 )
-						clients.remove(curList.get(i));
 					
 				}
 				else
@@ -649,21 +664,20 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				
 			}
 			
-			for (Map.Entry<Integer, ArrayList<TableEntry>> entry : streamToClientsMap.entrySet())
+			for (Map.Entry<Integer, List<TableEntry>> entry : streamToClientsMap.entrySet())
 			{		
 				logger.debug(":::::::: Printing streamToClientMap data structure ::::::::::");
 				logger.debug("key = {}  and ",entry.getKey());
 				for (int i = 0; i < entry.getValue().size(); i++) 
 				{
 					logger.debug("             value = " + entry.getValue().get(i).ip +
-							"    " + String.valueOf(entry.getValue().get(i).port) + 
-							"  toberemoved = " +  entry.getValue().get(i).toBeRemoved);
+							"    " + String.valueOf(entry.getValue().get(i).port));
 					
 				}
 			}
 				
 			
-			for (Map.Entry<Integer, ArrayList<TableEntry>> entry : streamToClientsMap.entrySet())
+			for (Map.Entry<Integer, List<TableEntry>> entry : streamToClientsMap.entrySet())
 			{
 				Integer tpPortInt = 40000 + entry.getKey();
 				Short tpPortShort = tpPortInt.shortValue();
