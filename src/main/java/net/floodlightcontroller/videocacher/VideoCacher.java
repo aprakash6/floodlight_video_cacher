@@ -624,12 +624,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			{
 				if( streamToClientsMap.containsKey(curList.get(i).clientIdToBeDuplicated) )
 				{
-//					logger.debug(" ::::::::: key = {} and value = {} :::::::::",
-//							curList.get(i).clientIdToBeDuplicated,
-//							srcToClientsMap.get(curList.get(i).clientIdToBeDuplicated));
-					
 					ArrayList<TableEntry> clients = streamToClientsMap.get(curList.get(i).clientIdToBeDuplicated);
-					clients.add(curList.get(i));
+					if ( ! clients.contains(curList.get(i)) )
+						clients.add(curList.get(i));
 				}
 				else
 				{
