@@ -61,6 +61,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 			this.port = 0;
 			this.hardTimeout = 0;
 			this.clientIdToBeDuplicated = 0;
+			this.toBeRemoved = 0;
 		}
 
 		public boolean equals(TableEntry other) 
