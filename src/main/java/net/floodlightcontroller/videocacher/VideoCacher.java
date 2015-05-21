@@ -708,24 +708,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				newRule.setMatch(newMatch);
 				
 				
-				//To determine the old rule so that it can be higher priority for a small duration
-				OFFlowMod oldRule = new OFFlowMod();
-				if ( swToFlowMod.containsKey(curSw) )
-				{
-					List<OFFlowMod> flowList = swToFlowMod.get(curSw);
-					for ( int k=0; k < flowList.size(); k++ )
-					{
-						if ( flowList.get(k).getMatch().equals(newMatch) )
-						{
-							oldRule = flowList.get(k);
-							oldRule.setPriority((short) 2000);
-							oldRule.setHardTimeout(globalTimeout);
-							staticFlowEntryPusher.addFlow("timeoutLater", oldRule, curSw);
-							break;
-						}
-					
-					}
-				}
+				
 				
 				ArrayList<OFAction> newActions = new ArrayList<OFAction>();
 				OFAction outOrig = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
@@ -774,7 +757,24 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					swToFlowMod.put(curSw, flowList);
 				}
 		
-				
+				//To determine the old rule so that it can be higher priority for a small duration
+				OFFlowMod oldRule = new OFFlowMod();
+				if ( swToFlowMod.containsKey(curSw) )
+				{
+					List<OFFlowMod> flowList = swToFlowMod.get(curSw);
+					for ( int k=0; k < flowList.size(); k++ )
+					{
+						if ( flowList.get(k).getMatch().equals(newMatch) )
+						{
+							oldRule = flowList.get(k);
+							oldRule.setPriority((short) 2000);
+							oldRule.setHardTimeout(globalTimeout);
+							staticFlowEntryPusher.addFlow("timeoutLater", oldRule, curSw);
+							break;
+						}
+					
+					}
+				}
 
 				staticFlowEntryPusher.addFlow("temp", newRule, curSw);
 				
