@@ -767,13 +767,13 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						if ( flowList.get(k).getMatch().equals(newMatch) )
 						{
 							oldRule = flowList.get(k);
-							oldRule.setPriority((short) 2000);
 							oldRule.setHardTimeout(globalTimeout);
+							oldRule.setPriority((short) 2000);
+							
 							//staticFlowEntryPusher.addFlow("timeoutLater", oldRule, curSw);
-							String curSwLong = curSw.replace(":", "");
-							logger.debug("Value = " + Long.parseLong(curSwLong,16) );
+							String curSwModified = curSw;
 							try {
-					 			floodlightProvider.getSwitch(Long.parseLong(curSwLong,16)).write(oldRule, null);
+					 			floodlightProvider.getSwitch(Long.parseLong(curSwModified.replace(":", ""),16)).write(oldRule, null);
 					 		} catch (Exception e) {
 					 			e.printStackTrace();
 					 		}	
