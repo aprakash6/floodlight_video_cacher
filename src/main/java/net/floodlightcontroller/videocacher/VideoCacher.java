@@ -87,7 +87,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	protected Map<Integer, List<TableEntry>>  streamToClientsMap;
 	
 	protected Map<String, List<OFFlowMod>> swToFlowMod;
-	protected Short globalTimeout;
+	protected Integer clientToBeDroppedToSimulateCaching;
 	
 	protected Map<Integer, OFFlowMod> ruleTable;
 	protected Integer flowCount;
@@ -189,7 +189,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	    clientList = new HashMap <Integer, TableEntry>();
 	    streamToClientsMap = new HashMap<Integer, List<TableEntry>>();
 	    swToFlowMod = new HashMap<String, List<OFFlowMod>>();
-		globalTimeout = (short) 0;
+	    clientToBeDroppedToSimulateCaching = 0;
 	}
 
 	@Override
@@ -592,7 +592,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						timeout = Short.parseShort(var11);
 						TableEntry curEntry = clientList.get(clientToBeTurnedOn);
 						curEntry.hardTimeout = timeout;
-						globalTimeout = timeout;
+						clientToBeDroppedToSimulateCaching = clientToBeTurnedOn;
 						this.handleSrcTapEvents(clientToBeTurnedOn, curEntry);
 					}// end of src tap case
 					
@@ -742,9 +742,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				newRule.setActions(newActions);
 				newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 	
 				
-				newRule.setPriority((short) 1000);
+				newRule.setPriority((short) 1111);
 				
-				
+				/*
 				if ( swToFlowMod.containsKey(curSw) )
 				{
 					List<OFFlowMod> flowList = swToFlowMod.get(curSw);
@@ -782,9 +782,11 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 					
 					}
 				}
-
+				*/
+				
 				staticFlowEntryPusher.addFlow("temp", newRule, curSw);
 				
+				this.dropClientOnLowerSwitchToSimulateCaching(curSw, clientToBeDroppedToSimulateCaching);
 //				try {
 //		 			floodlightProvider.getSwitch(Long.parseLong(curSw)).write(newRule, null);
 //		 		} catch (Exception e) {
@@ -803,6 +805,48 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 	}
 	
+	protected void dropClientOnLowerSwitchToSimulateCaching(String curSw, 
+						Integer clientToBeDroppedToSimulateCaching)
+	{
+		String curSwModified = new String(curSw);
+		curSwModified = curSwModified.replace(":","");
+		long swId = Long.parseLong(curSwModified, 16);
+		swId = swId + 1; //this is the lower switch on the same OVS
+		
+		OFMatch matchDrop = new OFMatch();
+		OFFlowMod ruleMovieDrop = new OFFlowMod();
+		ruleMovieDrop.setType(OFType.FLOW_MOD);
+		ruleMovieDrop.setCommand(OFFlowMod.OFPFC_ADD);
+		ruleMovieDrop.setBufferId(OFPacketOut.BUFFER_ID_NONE);
+		ruleMovieDrop.setIdleTimeout(FLOWMOD_DEFAULT_IDLE_TIMEOUT);
+		ruleMovieDrop.setHardTimeout
+			(clientList.get(clientToBeDroppedToSimulateCaching).hardTimeout);
+		matchDrop.setDataLayerType(Ethernet.TYPE_IPv4);
+		matchDrop.setNetworkProtocol(IPv4.PROTOCOL_UDP);
+		//matchDrop.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
+		//matchMovieLower.setTransportSource((short) 33333);
+		matchDrop.setNetworkDestination
+			(IPv4.toIPv4Address(clientList.get(clientToBeDroppedToSimulateCaching).ip));
+		matchDrop.setTransportDestination
+			(clientList.get(clientToBeDroppedToSimulateCaching).port);
+		matchDrop.setInputPort(OFPort.OFPP_LOCAL.getValue());
+		//set everything to wildcards except nw_proto and dl_type
+		matchDrop.setWildcards(~OFMatch.OFPFW_NW_PROTO 
+									& ~OFMatch.OFPFW_DL_TYPE
+									& ~OFMatch.OFPFW_NW_DST_ALL
+									& ~OFMatch.OFPFW_TP_DST);
+		ruleMovieDrop.setMatch(matchDrop);
+		ArrayList<OFAction> actionMovieDrop = new ArrayList<OFAction>();
+		ruleMovieDrop.setActions(actionMovieDrop);
+		ruleMovieDrop.setLengthU(OFFlowMod.MINIMUM_LENGTH
+								+ OFActionOutput.MINIMUM_LENGTH );
+		
+		try {
+ 			floodlightProvider.getSwitch(swId).write(ruleMovieDrop, null);
+ 		} catch (Exception e) {
+ 			e.printStackTrace();
+ 		}	
+	}
 
 	@Override
 	public void switchAdded(long switchId) 
