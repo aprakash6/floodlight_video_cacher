@@ -833,7 +833,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		//set everything to wildcards except nw_proto and dl_type
 		matchDrop.setWildcards(~OFMatch.OFPFW_NW_PROTO 
 									& ~OFMatch.OFPFW_DL_TYPE
-									& ~OFMatch.OFPFW_NW_DST_ALL
 									& ~OFMatch.OFPFW_TP_DST);
 		ruleMovieDrop.setMatch(matchDrop);
 		ArrayList<OFAction> actionMovieDrop = new ArrayList<OFAction>();
