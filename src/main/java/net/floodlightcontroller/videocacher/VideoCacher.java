@@ -842,8 +842,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		
 		ruleMovieDrop.setPriority((short)2222);
 		ruleMovieDrop.setActions(actionMovieDrop);
-		ruleMovieDrop.setLengthU(OFFlowMod.MINIMUM_LENGTH
-								+ OFActionOutput.MINIMUM_LENGTH );
+		ruleMovieDrop.setLengthU(OFFlowMod.MINIMUM_LENGTH);
 		
 		try {
  			floodlightProvider.getSwitch(swId).write(ruleMovieDrop, null);
