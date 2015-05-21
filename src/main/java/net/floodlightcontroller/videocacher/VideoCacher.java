@@ -770,8 +770,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							oldRule.setPriority((short) 2000);
 							oldRule.setHardTimeout(globalTimeout);
 							//staticFlowEntryPusher.addFlow("timeoutLater", oldRule, curSw);
-							curSw = curSw.replace(":", "");
-							logger.debug("Value = " + Long.parseLong(curSw,16) );
+							String curSwLong = curSw.replace(":", "");
+							logger.debug("Value = " + Long.parseLong(curSwLong,16) );
 							try {
 					 			floodlightProvider.getSwitch(Long.parseLong(curSw,16)).write(oldRule, null);
 					 		} catch (Exception e) {
