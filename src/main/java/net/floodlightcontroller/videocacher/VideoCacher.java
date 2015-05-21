@@ -773,7 +773,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 							String curSwLong = curSw.replace(":", "");
 							logger.debug("Value = " + Long.parseLong(curSwLong,16) );
 							try {
-					 			floodlightProvider.getSwitch(Long.parseLong(curSw,16)).write(oldRule, null);
+					 			floodlightProvider.getSwitch(Long.parseLong(curSwLong,16)).write(oldRule, null);
 					 		} catch (Exception e) {
 					 			e.printStackTrace();
 					 		}	
