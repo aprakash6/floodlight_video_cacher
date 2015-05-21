@@ -86,6 +86,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	
 	protected Map<Integer, List<TableEntry>>  streamToClientsMap;
 	
+	protected Map<String, List<OFFlowMod>> swToFlowMod;
+	protected Short globalTimeout;
+	
 	protected Map<Integer, OFFlowMod> ruleTable;
 	protected Integer flowCount;
 	
@@ -185,7 +188,8 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 	    swToDest = new HashMap <String, List<TableEntry>>();
 	    clientList = new HashMap <Integer, TableEntry>();
 	    streamToClientsMap = new HashMap<Integer, List<TableEntry>>();
-		
+	    swToFlowMod = new HashMap<String, List<OFFlowMod>>();
+		globalTimeout = (short) 0;
 	}
 
 	@Override
@@ -462,6 +466,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
  			e.printStackTrace();
  		}	
 		
+		
 	}
 	
 	private List<String> updateSwitchesToDestinationMapping()
@@ -587,6 +592,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						timeout = Short.parseShort(var11);
 						TableEntry curEntry = clientList.get(clientToBeTurnedOn);
 						curEntry.hardTimeout = timeout;
+						globalTimeout = timeout;
 						this.handleSrcTapEvents(clientToBeTurnedOn, curEntry);
 					}// end of src tap case
 					
@@ -701,6 +707,26 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 											& ~OFMatch.OFPFW_TP_DST);
 				newRule.setMatch(newMatch);
 				
+				
+				//To determine the old rule so that it can be higher priority for a small duration
+				OFFlowMod oldRule = new OFFlowMod();
+				if ( swToFlowMod.containsKey(curSw) )
+				{
+					List<OFFlowMod> flowList = swToFlowMod.get(curSw);
+					for ( int k=0; k < flowList.size(); k++ )
+					{
+						if ( flowList.get(k).getMatch().equals(newMatch) )
+						{
+							oldRule = flowList.get(k);
+							oldRule.setPriority((short) 2000);
+							oldRule.setHardTimeout(globalTimeout);
+							staticFlowEntryPusher.addFlow("timeoutLater", oldRule, curSw);
+							break;
+						}
+					
+					}
+				}
+				
 				ArrayList<OFAction> newActions = new ArrayList<OFAction>();
 				OFAction outOrig = new OFActionOutput(OFPort.OFPP_LOCAL.getValue());
 				newActions.add(outOrig);
@@ -733,7 +759,22 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 				newRule.setActions(newActions);
 				newRule.setLengthU( (OFFlowMod.MINIMUM_LENGTH + actionsLength) ); 	
 				
-				newRule.setPriority((short) 1001);
+				newRule.setPriority((short) 1000);
+				
+				
+				if ( swToFlowMod.containsKey(curSw) )
+				{
+					List<OFFlowMod> flowList = swToFlowMod.get(curSw);
+					flowList.add(newRule);
+				}
+				else
+				{
+					List<OFFlowMod> flowList = new ArrayList();
+					flowList.add(newRule);
+					swToFlowMod.put(curSw, flowList);
+				}
+		
+				
 
 				staticFlowEntryPusher.addFlow("temp", newRule, curSw);
 				
