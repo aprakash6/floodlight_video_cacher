@@ -813,6 +813,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		long swId = Long.parseLong(curSwModified, 16);
 		swId = swId + 1; //this is the lower switch on the same OVS
 		
+		Integer tpSrc = 40000 + clientList.get(clientToBeDroppedToSimulateCaching).clientIdToBeDuplicated;
+		Short tpSrcShort = tpSrc.shortValue();
+		
 		OFMatch matchDrop = new OFMatch();
 		OFFlowMod ruleMovieDrop = new OFFlowMod();
 		ruleMovieDrop.setType(OFType.FLOW_MOD);
@@ -824,20 +827,18 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		matchDrop.setDataLayerType(Ethernet.TYPE_IPv4);
 		matchDrop.setNetworkProtocol(IPv4.PROTOCOL_UDP);
 		//matchDrop.setNetworkSource(IPv4.toIPv4Address(ROOT_IP));
-		//matchMovieLower.setTransportSource((short) 33333);
-		matchDrop.setNetworkDestination
-			(IPv4.toIPv4Address(clientList.get(clientToBeDroppedToSimulateCaching).ip));
-		matchDrop.setTransportDestination
-			(clientList.get(clientToBeDroppedToSimulateCaching).port);
+		matchDrop.setTransportSource( tpSrcShort );
+//		matchDrop.setNetworkDestination
+//			(IPv4.toIPv4Address(clientList.get(clientToBeDroppedToSimulateCaching).ip));
+//		matchDrop.setTransportDestination
+//			(clientList.get(clientToBeDroppedToSimulateCaching).port);
 		matchDrop.setInputPort(OFPort.OFPP_LOCAL.getValue());
 		//set everything to wildcards except nw_proto and dl_type
 		matchDrop.setWildcards(~OFMatch.OFPFW_NW_PROTO 
 									& ~OFMatch.OFPFW_DL_TYPE
-									& ~OFMatch.OFPFW_TP_DST);
+									& ~OFMatch.OFPFW_TP_SRC);
 		ruleMovieDrop.setMatch(matchDrop);
 		ArrayList<OFAction> actionMovieDrop = new ArrayList<OFAction>();
-		//OFAction outDropMovie = new OFActionOutput();
-		//actionMovieDrop.add(outDropMovie);
 		
 		ruleMovieDrop.setPriority((short)2222);
 		ruleMovieDrop.setActions(actionMovieDrop);
