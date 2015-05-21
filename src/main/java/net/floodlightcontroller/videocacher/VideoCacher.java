@@ -813,8 +813,6 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		long swId = Long.parseLong(curSwModified, 16);
 		swId = swId + 1; //this is the lower switch on the same OVS
 		
-		logger.debug("<<<<<<    " + swId);
-		
 		OFMatch matchDrop = new OFMatch();
 		OFFlowMod ruleMovieDrop = new OFFlowMod();
 		ruleMovieDrop.setType(OFType.FLOW_MOD);
@@ -839,6 +837,9 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 									& ~OFMatch.OFPFW_TP_DST);
 		ruleMovieDrop.setMatch(matchDrop);
 		ArrayList<OFAction> actionMovieDrop = new ArrayList<OFAction>();
+		OFAction outDropMovie = new OFActionOutput();
+		actionMovieDrop.add(outDropMovie);
+		
 		ruleMovieDrop.setActions(actionMovieDrop);
 		ruleMovieDrop.setLengthU(OFFlowMod.MINIMUM_LENGTH
 								+ OFActionOutput.MINIMUM_LENGTH );
