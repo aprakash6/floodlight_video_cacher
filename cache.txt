@@ -10,8 +10,23 @@ Start 0 helps 0 at NONE srctap 5 on for 100
 
 Start 5 helps 6 at 00:00:00:00:00:00:11:01 srctap 6 on for 10
 
-Start 6 helps 7 at 00:00:00:00:00:00:22:01 srctap 7 on for 10
+Start 5 helps 7 at 00:00:00:00:00:00:22:01 srctap 7 on for 10
 
-Start 0 helps 0 at NONE srctap 0 on for 0
+Start 0 helps 0 at NONE srctap 8 on for 100
 
-Start 0 helps 0 at NONE srctap 0 on for 0
+Start 0 helps 0 at NONE srctap 9 on for 100
+
+Start 0 helps 0 at NONE srctap 10 on for 100
+
+Stop 5 helps 6 at 00:00:00:00:00:00:11:01 srctap 0 on for 0
+Start 10 helps 11 at 00:00:00:00:00:00:11:01 srctap 11 on for 7
+
+Start 0 helps 0 at NONE srctap 12 on for 100
+
+Stop 5 helps 7 at 00:00:00:00:00:00:22:01 srctap 13 on for 57
+
+Start 0 helps 0 at NONE srctap 14 on for 44
+
+Stop 10 helps 11 at 00:00:00:00:00:00:11:01 15 on for 10
+
+Start 0 helps 0 at NONE srctap 16 on for 6
