@@ -487,7 +487,7 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 		BufferedReader br = new BufferedReader(fr);
 		
 		String sw = null;
-		Integer clientIdToBeDuplicated = 0;
+		Integer clientIdToBeDuped = 0;
 		Integer clientIdToBeStopped = 0;
 		Integer clientId = 0;
 		Short timeout = 0;
@@ -530,10 +530,10 @@ public class VideoCacher implements IFloodlightModule, IOFMessageListener, IOFSw
 						sw = var6;
 						if ( ! modifiedSwitches.contains(sw)  )
 							modifiedSwitches.add(sw);
-						clientIdToBeDuplicated = Integer.parseInt(var2);
+						clientIdToBeDuped = Integer.parseInt(var2);
 						clientId = Integer.parseInt(var4);
 						TableEntry latestEntry = clientList.get(clientId);
-						latestEntry.clientIdToBeDuplicated = clientIdToBeDuplicated;
+						latestEntry.clientIdToBeDuplicated = clientIdToBeDuped;
 						
 						if ( swToDest.containsKey(sw) )
 						{
